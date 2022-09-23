@@ -9,7 +9,7 @@ android {
     compileSdk 32
 
     defaultConfig {
-        applicationId "com.example.seng440_assignment_2"
+        applicationId "nz.ac.canterbury.guessit"
         minSdk 26
         targetSdk 32
         versionCode 1

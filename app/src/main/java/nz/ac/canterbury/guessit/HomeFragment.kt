@@ -1,4 +1,4 @@
-package com.example.seng440_assignment_2
+package nz.ac.canterbury.guessit
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import nz.ac.canterbury.guessit.R
 
 class HomeFragment : Fragment() {
     override fun onCreateView(

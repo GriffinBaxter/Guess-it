@@ -1,4 +1,4 @@
-package com.example.seng440_assignment_2
+package nz.ac.canterbury.guessit
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
