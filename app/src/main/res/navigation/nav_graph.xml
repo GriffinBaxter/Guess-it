@@ -10,4 +10,10 @@
         android:name="nz.ac.canterbury.guessit.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home"/>
+
+    <fragment
+        android:id="@+id/BluetoohFragment"
+        android:name="nz.ac.canterbury.guessit.BluetoothFragment"
+        android:label="fragment_bluetooth"
+        tools:layout="@layout/fragment_bluetooth"/>
 </navigation>
