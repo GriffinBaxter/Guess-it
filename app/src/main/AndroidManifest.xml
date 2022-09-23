@@ -4,6 +4,7 @@
     package="com.example.seng440_assignment_2">
 
     <application
+        android:name=".SENGApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
