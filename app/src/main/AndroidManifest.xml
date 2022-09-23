@@ -22,7 +22,6 @@
         <activity
             android:name="nz.ac.canterbury.guessit.MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/Theme.SENG440Assignment2">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
