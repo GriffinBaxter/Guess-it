@@ -1,60 +1,77 @@
 package nz.ac.canterbury.guessit
 
-import android.Manifest
-import android.annotation.SuppressLint
-import android.app.AlertDialog
-import android.content.Context
-import android.content.Intent
-import android.location.Location
-import android.location.LocationManager
 import android.os.Bundle
-import android.provider.Settings
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+import androidx.fragment.app.Fragment
 import com.mapbox.maps.MapView
+import com.mapbox.maps.MapboxMap
+import com.mapbox.maps.ScreenCoordinate
 import com.mapbox.maps.Style
+import com.mapbox.maps.plugin.annotation.annotations
+import com.mapbox.maps.plugin.annotation.generated.CircleAnnotationOptions
+import com.mapbox.maps.plugin.annotation.generated.createCircleAnnotationManager
+import com.mapbox.maps.plugin.gestures.addOnMapClickListener
 
 
 class MapFragment : Fragment() {
 
 
-    var mapView: MapView? = null
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
-    var locationSet = false
+    lateinit var latLongLabel: TextView
+    lateinit var mapView: MapView
+    lateinit var mapboxMap: MapboxMap
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        var view: View = inflater.inflate(R.layout.fragment_map, container, false)
+    ): View {
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity as MainActivity)
+        // Inflate the layout for this fragment
+        val view: View = inflater.inflate(R.layout.fragment_map, container, false)
+
+
+        latLongLabel = view.findViewById(R.id.latLongLabel)
 
 
         mapView = view.findViewById(R.id.mapView)
-        mapView?.getMapboxMap()?.loadStyleUri(Style.MAPBOX_STREETS)
+        mapboxMap = mapView.getMapboxMap()
+        mapView.getMapboxMap().loadStyleUri(Style.MAPBOX_STREETS)
+
+        // Create an instance of the Annotation API and get the CircleAnnotationManager.
+        val annotationApi = mapView.annotations
+        val circleAnnotationManager = annotationApi.createCircleAnnotationManager()
+
+        mapboxMap.addOnMapClickListener { point ->
+
+            Toast.makeText(activity as MainActivity, String.format("User clicked at: %s", point.toString()), Toast.LENGTH_LONG).show()
+
+            //Adding marker to map
+            circleAnnotationManager.deleteAll()
+            // Set options for the resulting circle layer.
+            val circleAnnotationOptions: CircleAnnotationOptions = CircleAnnotationOptions()
+                // Define a geographic coordinate.
+                .withPoint(point)
+                // Style the circle that will be added to the map.
+                .withCircleRadius(8.0)
+                .withCircleColor("#3399ff")
+                .withCircleStrokeWidth(2.0)
+                .withCircleStrokeColor("#ffffff")
+            // Add the resulting circle to the map.
+            circleAnnotationManager.create(circleAnnotationOptions)
 
 
+            latLongLabel.text = "Latitude: ${point.latitude()}\nLongitude: ${point.longitude()}"
+            true
+        }
 
 
         return view
     }
-//This aint working btw. you need permissions
-    @SuppressLint("MissingPermission")
-    private fun obtieneLocalizacion(){
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener { location: Location? ->
-                var latitude = location?.latitude
-                var longitude = location?.longitude
-                Log.e("loc", latitude.toString() + "     " + longitude.toString())
-                locationSet = true
-            }
-    }
+
+
+
+
 }

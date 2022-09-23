@@ -16,6 +16,9 @@
         <action
             android:id="@+id/action_homeFragment_to_BluetoothFragment2"
             app:destination="@id/BluetoothFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
     </fragment>
     <fragment
         android:id="@+id/showPhoto"
@@ -27,4 +30,9 @@
         android:name="nz.ac.canterbury.guessit.BluetoothFragment"
         android:label="fragment_bluetooth"
         tools:layout="@layout/fragment_bluetooth"/>
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="nz.ac.canterbury.guessit.MapFragment"
+        android:label="fragment_map"
+        tools:layout="@layout/fragment_map" />
 </navigation>
