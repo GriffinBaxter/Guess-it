@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_homeFragment_to_showPhoto"
             app:destination="@id/showPhoto" />
+        <action
+            android:id="@+id/action_homeFragment_to_BluetoothFragment2"
+            app:destination="@id/BluetoothFragment" />
     </fragment>
     <fragment
         android:id="@+id/showPhoto"
@@ -20,7 +23,7 @@
         android:label="fragment_show_photo"
         tools:layout="@layout/fragment_show_photo" />
     <fragment
-        android:id="@+id/BluetoohFragment"
+        android:id="@+id/BluetoothFragment"
         android:name="nz.ac.canterbury.guessit.BluetoothFragment"
         android:label="fragment_bluetooth"
         tools:layout="@layout/fragment_bluetooth"/>

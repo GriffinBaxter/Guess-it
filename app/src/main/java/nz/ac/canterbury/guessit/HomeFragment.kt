@@ -21,6 +21,11 @@ class HomeFragment : Fragment() {
             Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_showPhoto)
         }
 
+        val showBluetoothButton: Button = view.findViewById(R.id.showBluetoothButton)
+        showBluetoothButton.setOnClickListener {
+            Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_BluetoothFragment2)
+        }
+
         return view
     }
 }

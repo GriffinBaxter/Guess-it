@@ -1,11 +1,15 @@
 package nz.ac.canterbury.guessit
 
+import android.Manifest
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +20,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import org.w3c.dom.Text
 
 class BluetoothFragment : Fragment() {
@@ -42,6 +47,18 @@ class BluetoothFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this).get(BluetoothViewModel::class.java)
         // TODO: Use the ViewModel
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            requestMultiplePermissions.launch(arrayOf(
+                Manifest.permission.BLUETOOTH_SCAN,
+                Manifest.permission.BLUETOOTH_CONNECT,
+                Manifest.permission.BLUETOOTH_ADVERTISE
+            ))
+        }
+        else{
+            val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+            requestBluetooth.launch(enableBtIntent)
+        }
 
         val bluetoothManager = context?.getSystemService(AppCompatActivity.BLUETOOTH_SERVICE) as BluetoothManager
         bluetoothAdapter = bluetoothManager.adapter
@@ -76,6 +93,20 @@ class BluetoothFragment : Fragment() {
                 Toast.makeText(context, "Already off!", Toast.LENGTH_LONG).show()
             } else {
                 // Turn on bluetooth
+                if (ActivityCompat.checkSelfPermission(
+                        requireContext(),
+                        Manifest.permission.BLUETOOTH_CONNECT
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return@setOnClickListener
+                }
                 bluetoothAdapter.disable()
                 Toast.makeText(context, "Bluetooth now turned off", Toast.LENGTH_LONG).show()
             }
@@ -84,6 +115,20 @@ class BluetoothFragment : Fragment() {
         val discoverableButton = view.findViewById(R.id.discoverableButton) as Button
 
         discoverableButton.setOnClickListener {
+            if (ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.BLUETOOTH_SCAN
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return@setOnClickListener
+            }
             if (!bluetoothAdapter.isDiscovering) {
                 Toast.makeText(context, "Making your device discoverable", Toast.LENGTH_LONG).show()
                 val intent = Intent(Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE))
@@ -108,6 +153,23 @@ class BluetoothFragment : Fragment() {
 
 
     }
+
+    private var requestBluetooth = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            //granted
+            Log.e("PERMISSIONS", "BT granted")
+        }else{
+            //deny
+            Log.e("PERMISSIONS", "BT denied")
+        }
+    }
+
+    private val requestMultiplePermissions =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            permissions.entries.forEach {
+                Log.d("test006", "${it.key} = ${it.value}")
+            }
+        }
 
     private val startForResult2 = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             result: ActivityResult ->

@@ -2,8 +2,11 @@ package nz.ac.canterbury.guessit
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
 @HiltViewModel
-class BluetoothViewModel : ViewModel() {
+class BluetoothViewModel @Inject constructor(
+
+) : ViewModel() {
     // TODO: Implement the ViewModel
 }
