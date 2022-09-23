@@ -6,4 +6,6 @@
     <string name="take_photo">Take Photo</string>
     <string name="add_photo_from_phone">Add Photo From Phone</string>
     <string name="gallery">Gallery</string>
+
+    <string name="mapbox_access_token">pk.eyJ1IjoicnZhNDIiLCJhIjoiY2w4ZHJybGRmMDBmczNwbGRnNnhtb2psaSJ9.4LiECPKA0iWLBXJNpXfSNA</string>
 </resources>

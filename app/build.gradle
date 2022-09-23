@@ -76,6 +76,10 @@ dependencies {
     // Kotlin Extensions and Coroutines support for Room
     implementation "androidx.room:room-ktx:2.4.3"
 
+    // MapBox
+    implementation ('com.mapbox.maps:android:10.8.0')
+    implementation 'com.google.android.gms:play-services-location:20.0.0'
+
 }
 
 // Allow references to generated code
