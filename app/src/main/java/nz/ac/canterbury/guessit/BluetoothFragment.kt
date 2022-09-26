@@ -3,17 +3,18 @@ package nz.ac.canterbury.guessit
 import android.Manifest
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.companion.AssociationRequest
 import android.companion.BluetoothDeviceFilter
+import android.companion.CompanionDeviceManager
+import android.content.Context
 import android.content.Intent
+import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.os.Build
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import android.os.ParcelUuid
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,18 +22,23 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import org.w3c.dom.Text
-import java.util.*
-import java.util.regex.Pattern
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+
+private const val SELECT_DEVICE_REQUEST_CODE = 0
 
 class BluetoothFragment : Fragment() {
 
     private val REQUEST_CODE_ENABLE_BT = 1
     private val REQUEST_CODE_DISCOVERABLE_BT = 2
     lateinit var bluetoothAdapter: BluetoothAdapter
+
+
 
     companion object {
         fun newInstance() = BluetoothFragment()
@@ -67,6 +73,9 @@ class BluetoothFragment : Fragment() {
 
         val bluetoothManager: BluetoothManager = context?.getSystemService(AppCompatActivity.BLUETOOTH_SERVICE) as BluetoothManager
         bluetoothAdapter = bluetoothManager.adapter
+
+        val deviceManager: CompanionDeviceManager =
+            requireContext().getSystemService(Context.COMPANION_DEVICE_SERVICE) as CompanionDeviceManager
 
         val statusTextView: TextView = view.findViewById(R.id.bluetoothStatusText)
         statusTextView.text = "test"
@@ -170,6 +179,24 @@ class BluetoothFragment : Fragment() {
                 // Stop scanning as soon as one device matching the filter is found.
                 .setSingleDevice(false)
                 .build()
+
+
+            deviceManager.associate(pairingRequest,
+                object : CompanionDeviceManager.Callback() {
+                    // Called when a device is found. Launch the IntentSender so the user
+                    // can select the device they want to pair with.
+                    override fun onDeviceFound(chooserLauncher: IntentSender) {
+//                        startIntentSenderForResult(chooserLauncher,
+//                            SELECT_DEVICE_REQUEST_CODE, null, 0, 0, 0)
+//                        val intent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+                        val intentSenderRequest = IntentSenderRequest.Builder(chooserLauncher).build()
+                        startForResult3.launch(intentSenderRequest)
+                    }
+
+                    override fun onFailure(error: CharSequence?) {
+                        // Handle the failure.
+                    }
+                }, null)
         }
 
 
@@ -192,6 +219,34 @@ class BluetoothFragment : Fragment() {
                 Log.d("test006", "${it.key} = ${it.value}")
             }
         }
+
+    private val startForResult3 = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
+        result: ActivityResult ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data = result.data
+            // The user chose to pair the app with a Bluetooth device.
+            val deviceToPair: BluetoothDevice? =
+                data?.getParcelableExtra(CompanionDeviceManager.EXTRA_DEVICE)
+            deviceToPair?.let { device ->
+                if (ActivityCompat.checkSelfPermission(
+                        requireContext(),
+                        Manifest.permission.BLUETOOTH_CONNECT
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return@let
+                }
+                device.createBond()
+                // Maintain continuous interaction with a paired device.
+            }
+        }
+    }
 
     private val startForResult2 = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             result: ActivityResult ->
