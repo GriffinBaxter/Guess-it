@@ -64,19 +64,16 @@ class MapFragment : Fragment() {
             // Add the resulting circle to the map.
             circleAnnotationManager.create(circleAnnotationOptions)
 
+            map_guessButton.isEnabled = true
+
             true
         }
 
         map_guessButton = view.findViewById(R.id.map_guessButton)
         map_guessButton.setOnClickListener {
-            if (!this::selectedPoint.isInitialized) {
-                Toast.makeText(activity as MainActivity, "Please select a point on the map to guess", Toast.LENGTH_SHORT).show()
-            }
-            else {
-                manageGuess()
-            }
+            manageGuess()
         }
-
+        map_guessButton.isEnabled = false
 
         return view
     }
