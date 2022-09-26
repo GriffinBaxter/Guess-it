@@ -4,11 +4,14 @@ import android.Manifest
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
+import android.companion.AssociationRequest
+import android.companion.BluetoothDeviceFilter
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.os.ParcelUuid
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -22,6 +25,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import org.w3c.dom.Text
+import java.util.*
+import java.util.regex.Pattern
 
 class BluetoothFragment : Fragment() {
 
@@ -60,10 +65,10 @@ class BluetoothFragment : Fragment() {
             requestBluetooth.launch(enableBtIntent)
         }
 
-        val bluetoothManager = context?.getSystemService(AppCompatActivity.BLUETOOTH_SERVICE) as BluetoothManager
+        val bluetoothManager: BluetoothManager = context?.getSystemService(AppCompatActivity.BLUETOOTH_SERVICE) as BluetoothManager
         bluetoothAdapter = bluetoothManager.adapter
 
-        val statusTextView = view.findViewById(R.id.bluetoothStatusText) as TextView
+        val statusTextView: TextView = view.findViewById(R.id.bluetoothStatusText)
         statusTextView.text = "test"
 
         if (bluetoothAdapter.isEnabled) {
@@ -72,7 +77,7 @@ class BluetoothFragment : Fragment() {
             statusTextView.text = "Disabled"
         }
 
-        val turnOnButton = view.findViewById(R.id.turnOnButton) as Button
+        val turnOnButton: Button = view.findViewById(R.id.turnOnButton)
 
         turnOnButton.setOnClickListener {
             if (bluetoothAdapter.isEnabled) {
@@ -85,7 +90,7 @@ class BluetoothFragment : Fragment() {
             }
         }
 
-        val turnOffButton = view.findViewById(R.id.turnOffButton) as Button
+        val turnOffButton: Button = view.findViewById(R.id.turnOffButton)
 
         turnOffButton.setOnClickListener {
             if (!bluetoothAdapter.isEnabled) {
@@ -112,7 +117,7 @@ class BluetoothFragment : Fragment() {
             }
         }
 
-        val discoverableButton = view.findViewById(R.id.discoverableButton) as Button
+        val discoverableButton: Button = view.findViewById(R.id.discoverableButton)
 
         discoverableButton.setOnClickListener {
             if (ActivityCompat.checkSelfPermission(
@@ -136,8 +141,8 @@ class BluetoothFragment : Fragment() {
             }
         }
 
-        val pairedButton = view.findViewById(R.id.pairedButton) as Button
-        val pairedTextView = view.findViewById(R.id.pairedDevs) as TextView
+        val pairedButton: Button = view.findViewById(R.id.pairedButton)
+        val pairedTextView: TextView = view.findViewById(R.id.pairedDevs)
 
         pairedButton.setOnClickListener {
             if (bluetoothAdapter.isEnabled) {
@@ -150,6 +155,23 @@ class BluetoothFragment : Fragment() {
                 }
             }
         }
+
+        val companionSetupButton: Button = view.findViewById(R.id.companionSetupButton)
+        val deviceFilter: BluetoothDeviceFilter = BluetoothDeviceFilter.Builder()
+            // Match only Bluetooth devices whose name matches the pattern.
+//                .setNamePattern(Pattern.compile("My device"))
+            // Match only Bluetooth devices whose service UUID matches this pattern.
+//                .addServiceUuid(ParcelUuid(UUID(0x123abcL, -1L)), null)
+            .build()
+        companionSetupButton.setOnClickListener {
+            val pairingRequest: AssociationRequest = AssociationRequest.Builder()
+                // Find only devices that match this request filter.
+                .addDeviceFilter(deviceFilter)
+                // Stop scanning as soon as one device matching the filter is found.
+                .setSingleDevice(false)
+                .build()
+        }
+
 
 
     }

@@ -48,6 +48,12 @@
         android:layout_height="wrap_content"
         android:text="Get Paired Devices"
         android:minWidth="200dp" />
+    <Button
+        android:id="@+id/companionSetupButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Begin Pairing Process"
+        android:minWidth="200dp" />
     <TextView
         android:id="@+id/pairedDevs"
         android:layout_width="match_parent"
