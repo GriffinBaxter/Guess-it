@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.io.File
@@ -19,9 +20,13 @@ import java.util.*
 private const val REQUEST_CAMERA = 110
 private const val REQUEST_GALLERY = 111
 
-class ShowPhotoFragment : Fragment() {
+class ShowPhotoFragment : Fragment(), PhotoAdapter.OnPhotoListener {
 
     private lateinit var photosList: RecyclerView
+
+    private val viewModel: PhotoViewModel by activityViewModels() {
+        PhotoViewModelFactory((requireActivity().application as SENGApplication).repository)
+    }
 
     private val photoDirectory
         get() = File(requireContext().getExternalFilesDir(null), "guessit")
@@ -32,10 +37,18 @@ class ShowPhotoFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_show_photo, container, false)
 
+        if (!photoDirectory.exists()) {
+            photoDirectory.mkdirs()
+        }
+
+        val photoAdapter = PhotoAdapter(listOf(), this)  // TODO: update to use "viewModel.photos.value!!" instead of an empty list?
+        viewModel.photos.observe(viewLifecycleOwner) { newPhotos ->
+            photoAdapter.setData(newPhotos)
+        }
+
         photosList = view.findViewById(R.id.photosList)
         photosList.layoutManager = GridLayoutManager(requireContext(), 5)
-
-        loadPhotos()
+        photosList.adapter = photoAdapter
 
         val takePhotoButton: Button = view.findViewById(R.id.takePhotoButton)
         takePhotoButton.setOnClickListener {
@@ -48,17 +61,6 @@ class ShowPhotoFragment : Fragment() {
         }
 
         return view
-    }
-
-    private fun loadPhotos() {
-        if (photoDirectory.exists()) {
-            val photos = photoDirectory
-                .listFiles { file, _ -> file.isDirectory }
-                ?.map { Photo(it) }
-                ?.filter { it.file.exists() }
-
-            photosList.adapter = photos?.let { PhotoAdapter(it) }
-        }
     }
 
     private fun takePhoto() {
@@ -84,7 +86,9 @@ class ShowPhotoFragment : Fragment() {
     }
 
     private fun photoUri(): Uri {
-        val file = File(photoDirectory, "${UUID.randomUUID()}.jpg")  // TODO: change to an ordered ID scheme from database?
+        val id = UUID.randomUUID().toString()
+        val file = File(photoDirectory, "${id}.jpg")
+        viewModel.addPhoto(Photo(id, 0.0, 0.0, file.absolutePath))
         return FileProvider.getUriForFile(
             requireContext(),
             "nz.ac.canterbury.guessit.fileprovider",
@@ -94,16 +98,10 @@ class ShowPhotoFragment : Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
-            REQUEST_CAMERA -> {
-                if (resultCode == Activity.RESULT_OK) {
-                    loadPhotos()
-                }
-            }
             REQUEST_GALLERY -> {
                 if (resultCode == Activity.RESULT_OK) {
                     data?.data?.let { uri ->
                         copyUriToUri(uri, photoUri())
-                        loadPhotos()
                     }
                 }
             }
@@ -111,5 +109,9 @@ class ShowPhotoFragment : Fragment() {
                 super.onActivityResult(requestCode, resultCode, data)
             }
         }
+    }
+
+    override fun onPhotoClick(position: Int) {
+        // TODO
     }
 }

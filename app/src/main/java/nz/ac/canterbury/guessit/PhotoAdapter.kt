@@ -7,23 +7,37 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 
-class PhotoAdapter(private val photos: List<Photo>) : RecyclerView.Adapter<PhotoAdapter.PhotoHolder>() {
+class PhotoAdapter(private var photos: List<Photo>, private val onPhotoListener: OnPhotoListener)
+    : RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {
 
-    class PhotoHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val photoView: ImageView = view.findViewById(R.id.photoView)
+    class PhotoViewHolder(itemView: View, val onPhotoListener: OnPhotoListener)
+        : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+
+        val photoView: ImageView = itemView.findViewById(R.id.photoView)
+
+        override fun onClick(view: View?) {
+            onPhotoListener.onPhotoClick(adapterPosition)
+        }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.photo, parent, false)
-        return PhotoHolder(view)
+        return PhotoViewHolder(view, onPhotoListener)
     }
 
-    override fun getItemCount(): Int {
-        return photos.size
+    override fun onBindViewHolder(viewHolder: PhotoViewHolder, position: Int) {
+        val bitmap = BitmapFactory.decodeFile(photos[position].file)
+        viewHolder.photoView.setImageBitmap(bitmap)
     }
 
-    override fun onBindViewHolder(holder: PhotoHolder, i: Int) {
-        val bitmap = BitmapFactory.decodeFile(photos[i].file.absolutePath)
-        holder.photoView.setImageBitmap(bitmap)
+    override fun getItemCount() = photos.size
+
+    fun setData(newPhotos: List<Photo>) {
+        photos = newPhotos
+        notifyDataSetChanged()
+    }
+
+    interface OnPhotoListener {
+        fun onPhotoClick(position: Int)
     }
 }
