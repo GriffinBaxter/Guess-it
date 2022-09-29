@@ -25,6 +25,9 @@ class SinglePhotoFragment : Fragment() {
         val singlePhotoImageView: ImageView = view.findViewById(R.id.singlePhotoView)
         Picasso.get().load("file:$photoPath").into(singlePhotoImageView)
 
+        val latitude = arguments?.getString("latitude")!!
+        val longitude = arguments?.getString("longitude")!!
+
         val photoDescription = imageLabeler.setPhotoDescription(BitmapFactory.decodeFile(photoPath))
 
         return view

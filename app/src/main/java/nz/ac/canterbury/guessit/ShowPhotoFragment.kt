@@ -208,7 +208,9 @@ class ShowPhotoFragment : Fragment(), PhotoAdapter.OnPhotoListener {
 
     override fun onPhotoClick(position: Int) {
         val photo = viewModel.photos.value!![position]
-        val args = bundleOf("photoPath" to photo.file)
+        val args = bundleOf(
+            "photoPath" to photo.file, "latitude" to photo.latitude, "longitude" to photo.longitude
+        )
         Navigation.findNavController(requireView()).navigate(R.id.action_showPhoto_to_singlePhotoFragment, args)
     }
 }
