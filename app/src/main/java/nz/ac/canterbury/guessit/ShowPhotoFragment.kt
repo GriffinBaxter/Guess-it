@@ -6,6 +6,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -25,8 +27,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import java.io.File
-import java.io.IOException
+import java.io.*
 import java.util.*
 
 
@@ -152,7 +153,13 @@ class ShowPhotoFragment : Fragment(), PhotoAdapter.OnPhotoListener {
 
         val listener = object : LocationListener {
             override fun onLocationChanged(location: Location) {
-                viewModel.addPhoto(Photo(currentPhotoPath, location.latitude, location.longitude))
+                val thumbnailFile = getThumbnail(currentPhotoPath)
+                viewModel.addPhoto(Photo(
+                    currentPhotoPath,
+                    thumbnailFile.absolutePath,
+                    location.latitude,
+                    location.longitude,
+                ))
                 locationManager.removeUpdates(this)
             }
 
@@ -184,12 +191,14 @@ class ShowPhotoFragment : Fragment(), PhotoAdapter.OnPhotoListener {
                         val file = File(photoDirectory, "${UUID.randomUUID()}.jpg")
                         val photoUri = photoUri(file)
                         copyUriToUri(uri, photoUri)
+                        val thumbnailFile = getThumbnail(file.absolutePath)
                         val photoLocation = getPhotoLocation(file)
                         if (photoLocation != null) {
                             viewModel.addPhoto(Photo(
                                 file.absolutePath,
+                                thumbnailFile.absolutePath,
                                 photoLocation[0].toDouble(),
-                                photoLocation[1].toDouble()
+                                photoLocation[1].toDouble(),
                             ))
                         }
                     }
@@ -199,6 +208,21 @@ class ShowPhotoFragment : Fragment(), PhotoAdapter.OnPhotoListener {
                 super.onActivityResult(requestCode, resultCode, data)
             }
         }
+    }
+
+    private fun getThumbnail(filePath: String): File {
+        val thumbnailFile = File(photoDirectory, "${UUID.randomUUID()}.jpg")
+        val fis = FileInputStream(filePath)
+        var thumbnailBitmap = BitmapFactory.decodeStream(fis)
+        thumbnailBitmap = Bitmap.createScaledBitmap(
+            thumbnailBitmap, 128, 128, false
+        )
+        val fileOutputStream = FileOutputStream(thumbnailFile)
+        thumbnailBitmap.compress(
+            Bitmap.CompressFormat.JPEG, 75, fileOutputStream
+        )
+        fileOutputStream.close()
+        return thumbnailFile
     }
 
     override fun onPhotoClick(position: Int) {

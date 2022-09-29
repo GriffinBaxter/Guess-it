@@ -26,7 +26,7 @@ class PhotoAdapter(private var photos: List<Photo>, private val onPhotoListener:
     }
 
     override fun onBindViewHolder(viewHolder: PhotoViewHolder, position: Int) {
-        val bitmap = BitmapFactory.decodeFile(photos[position].file)
+        val bitmap = BitmapFactory.decodeFile(photos[position].thumbnailFile)
         viewHolder.photoView.setImageBitmap(bitmap)
     }
 
