@@ -2,19 +2,23 @@ package nz.ac.canterbury.guessit
 
 import android.app.Activity
 import android.content.Intent
+import android.media.ExifInterface
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.io.File
+import java.io.IOException
 import java.util.*
 
 private const val REQUEST_CAMERA = 110
@@ -31,6 +35,8 @@ class ShowPhotoFragment : Fragment(), PhotoAdapter.OnPhotoListener {
     private val photoDirectory
         get() = File(requireContext().getExternalFilesDir(null), "guessit")
 
+    private var currentPhotoPath = ""
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -41,7 +47,7 @@ class ShowPhotoFragment : Fragment(), PhotoAdapter.OnPhotoListener {
             photoDirectory.mkdirs()
         }
 
-        val photoAdapter = PhotoAdapter(listOf(), this)  // TODO: update to use "viewModel.photos.value!!" instead of an empty list?
+        val photoAdapter = PhotoAdapter(listOf(), this)
         viewModel.photos.observe(viewLifecycleOwner) { newPhotos ->
             photoAdapter.setData(newPhotos)
         }
@@ -65,8 +71,10 @@ class ShowPhotoFragment : Fragment(), PhotoAdapter.OnPhotoListener {
 
     private fun takePhoto() {
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        val uri = photoUri()
+        val file = File(photoDirectory, "${UUID.randomUUID()}.jpg")
+        val uri = photoUri(file)
         intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
+        currentPhotoPath = file.absolutePath
         startActivityForResult(intent, REQUEST_CAMERA)
     }
 
@@ -85,10 +93,7 @@ class ShowPhotoFragment : Fragment(), PhotoAdapter.OnPhotoListener {
         }
     }
 
-    private fun photoUri(): Uri {
-        val id = UUID.randomUUID().toString()
-        val file = File(photoDirectory, "${id}.jpg")
-        viewModel.addPhoto(Photo(id, 0.0, 0.0, file.absolutePath))
+    private fun photoUri(file: File): Uri {
         return FileProvider.getUriForFile(
             requireContext(),
             "nz.ac.canterbury.guessit.fileprovider",
@@ -96,12 +101,37 @@ class ShowPhotoFragment : Fragment(), PhotoAdapter.OnPhotoListener {
         )
     }
 
+    private fun getPhotoLocation(file: File): FloatArray? {
+        try {
+            val exifInterface = ExifInterface(file)
+            val latitudeLongitude = FloatArray(2)
+            if (exifInterface.getLatLong(latitudeLongitude)) {
+                return latitudeLongitude
+            }
+        } catch (e: IOException) {
+            e.message?.let { Log.e("Couldn't read exif info: ", it) }
+        }
+        Toast.makeText(context, "Selected photo has no location data available.", Toast.LENGTH_LONG).show()
+        return null
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
+            REQUEST_CAMERA -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    viewModel.addPhoto(Photo(currentPhotoPath, 0.toFloat(), 0.toFloat()))  // TODO: get location when taking photo
+                }
+            }
             REQUEST_GALLERY -> {
                 if (resultCode == Activity.RESULT_OK) {
                     data?.data?.let { uri ->
-                        copyUriToUri(uri, photoUri())
+                        val file = File(photoDirectory, "${UUID.randomUUID()}.jpg")
+                        val photoUri = photoUri(file)
+                        copyUriToUri(uri, photoUri)
+                        val photoLocation = getPhotoLocation(file)
+                        if (photoLocation != null) {
+                            viewModel.addPhoto(Photo(file.absolutePath, photoLocation[0], photoLocation[1]))
+                        }
                     }
                 }
             }
