@@ -7,6 +7,5 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "photo")
 class Photo(
     @PrimaryKey @ColumnInfo val file: String,
-    @ColumnInfo val thumbnailFile: String,
     @ColumnInfo val latitude: Double,
     @ColumnInfo val longitude: Double)

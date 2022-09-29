@@ -6,8 +6,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -155,10 +153,8 @@ class ShowPhotoFragment : Fragment(), PhotoAdapter.OnPhotoListener {
 
         val listener = object : LocationListener {
             override fun onLocationChanged(location: Location) {
-                val thumbnailFile = getThumbnail(currentPhotoPath)
                 viewModel.addPhoto(Photo(
                     currentPhotoPath,
-                    thumbnailFile.absolutePath,
                     location.latitude,
                     location.longitude,
                 ))
@@ -193,12 +189,10 @@ class ShowPhotoFragment : Fragment(), PhotoAdapter.OnPhotoListener {
                         val file = File(photoDirectory, "${UUID.randomUUID()}.jpg")
                         val photoUri = photoUri(file)
                         copyUriToUri(uri, photoUri)
-                        val thumbnailFile = getThumbnail(file.absolutePath)
                         val photoLocation = getPhotoLocation(file)
                         if (photoLocation != null) {
                             viewModel.addPhoto(Photo(
                                 file.absolutePath,
-                                thumbnailFile.absolutePath,
                                 photoLocation[0].toDouble(),
                                 photoLocation[1].toDouble(),
                             ))
@@ -210,21 +204,6 @@ class ShowPhotoFragment : Fragment(), PhotoAdapter.OnPhotoListener {
                 super.onActivityResult(requestCode, resultCode, data)
             }
         }
-    }
-
-    private fun getThumbnail(filePath: String): File {
-        val thumbnailFile = File(photoDirectory, "${UUID.randomUUID()}.jpg")
-        val fis = FileInputStream(filePath)
-        var thumbnailBitmap = BitmapFactory.decodeStream(fis)
-        thumbnailBitmap = Bitmap.createScaledBitmap(
-            thumbnailBitmap, 256, 256, false
-        )
-        val fileOutputStream = FileOutputStream(thumbnailFile)
-        thumbnailBitmap.compress(
-            Bitmap.CompressFormat.JPEG, 85, fileOutputStream
-        )
-        fileOutputStream.close()
-        return thumbnailFile
     }
 
     override fun onPhotoClick(position: Int) {

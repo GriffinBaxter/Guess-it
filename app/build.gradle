@@ -84,6 +84,9 @@ dependencies {
     //MLKit
     implementation 'com.google.mlkit:image-labeling:17.0.7'
 
+    // Picasso
+    implementation 'com.squareup.picasso:picasso:2.8'
+
 }
 
 // Allow references to generated code
