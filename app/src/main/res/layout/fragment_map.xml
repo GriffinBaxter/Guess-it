@@ -8,17 +8,11 @@
     android:orientation="vertical"
     tools:context=".MapFragment">
 
-    <Button
-        android:id="@+id/loadImageButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="LoadImage" />
-
     <TextView
         android:id="@+id/photoFeaturesTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Features of Photo:"
+        android:text="@string/image_description_title"
         android:textAlignment="center"
         android:textSize="20sp"
         mapbox:layout_constraintBottom_toTopOf="@+id/map_guessButton"
@@ -68,7 +62,7 @@
             android:paddingTop="10dp"
             android:paddingEnd="20dp"
             android:paddingBottom="15dp"
-            android:text="Guess"
+            android:text="@string/guess_button_on_map"
             android:textSize="32sp"
             mapbox:layout_constraintBottom_toBottomOf="parent"
             mapbox:layout_constraintEnd_toEndOf="parent"

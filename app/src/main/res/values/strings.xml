@@ -9,4 +9,6 @@
 
     <string name="mapbox_access_token">pk.eyJ1IjoicnZhNDIiLCJhIjoiY2w4ZHJybGRmMDBmczNwbGRnNnhtb2psaSJ9.4LiECPKA0iWLBXJNpXfSNA</string>
     <string name="choose_a_photo_to_show">Choose a Photo to Show</string>
+    <string name="image_description_title">Features of Photo:</string>
+    <string name="guess_button_on_map">Guess</string>
 </resources>

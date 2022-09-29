@@ -28,7 +28,6 @@ import kotlin.math.roundToInt
 class MapFragment : Fragment() {
 
 
-    lateinit var loadImageButton: Button
     lateinit var photoDescriptionTextView: TextView
     lateinit var mapView: MapView
     lateinit var map_guessButton: Button
@@ -51,7 +50,6 @@ class MapFragment : Fragment() {
         imageLabeler = ImageLabeler(activity as MainActivity)
 
 
-        loadImageButton = view.findViewById(R.id.loadImageButton)
         photoDescriptionTextView = view.findViewById(R.id.photoFeatures)
         mapView = view.findViewById(R.id.mapView)
         mapboxMap = mapView.getMapboxMap()
@@ -92,11 +90,6 @@ class MapFragment : Fragment() {
         }
         map_guessButton.isEnabled = false
 
-        loadImageButton.setOnClickListener {
-            val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
-            startActivityForResult(gallery, pickImage)
-        }
-
         return view
     }
 
@@ -129,19 +122,4 @@ class MapFragment : Fragment() {
     private fun rad2deg(rad: Double): Double {
         return rad * 180.0 / Math.PI
     }
-
-    //These functions wont be there in the end, the sending phone should get the image description and send it over
-    private val pickImage = 100
-    private var imageUri: Uri? = null
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == RESULT_OK && requestCode == pickImage) {
-            imageUri = data?.data
-//            photoDescriptionTextView.text = imageLabeler.setPhotoDescription(imageUri!!)
-        }
-
-    }
-
-
-
 }
