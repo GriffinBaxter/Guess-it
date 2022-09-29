@@ -1,7 +1,7 @@
 package nz.ac.canterbury.guessit
 
 import android.app.Activity
-import android.net.Uri
+import android.graphics.Bitmap
 import android.widget.Toast
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.label.ImageLabel
@@ -11,11 +11,11 @@ import java.io.IOException
 
 class ImageLabeler(var activity: Activity) {
 
-    fun setPhotoDescription(imageUri: Uri): String {
+    fun setPhotoDescription(bitmap: Bitmap): String {
         //Load Image
         val image: InputImage
         try {
-            image = InputImage.fromFilePath(activity, imageUri)
+            image = InputImage.fromBitmap(bitmap, 0)
         } catch (e: IOException) {
             return "Failed to get Description of Image: Could not load Image"
         }

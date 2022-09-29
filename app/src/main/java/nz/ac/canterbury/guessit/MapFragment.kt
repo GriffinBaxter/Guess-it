@@ -137,7 +137,7 @@ class MapFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK && requestCode == pickImage) {
             imageUri = data?.data
-            photoDescriptionTextView.text = imageLabeler.setPhotoDescription(imageUri!!)
+//            photoDescriptionTextView.text = imageLabeler.setPhotoDescription(imageUri!!)
         }
 
     }
