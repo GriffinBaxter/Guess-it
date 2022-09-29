@@ -13,7 +13,12 @@ class PhotoAdapter(private var photos: List<Photo>, private val onPhotoListener:
     class PhotoViewHolder(itemView: View, val onPhotoListener: OnPhotoListener)
         : RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
-        val photoView: ImageView = itemView.findViewById(R.id.photoView)
+        val photoView: ImageView
+
+        init {
+            photoView = itemView.findViewById(R.id.photoView)
+            photoView.setOnClickListener(this)
+        }
 
         override fun onClick(view: View?) {
             onPhotoListener.onPhotoClick(adapterPosition)

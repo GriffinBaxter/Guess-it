@@ -24,7 +24,11 @@
         android:id="@+id/showPhoto"
         android:name="nz.ac.canterbury.guessit.ShowPhotoFragment"
         android:label="fragment_show_photo"
-        tools:layout="@layout/fragment_show_photo" />
+        tools:layout="@layout/fragment_show_photo" >
+        <action
+            android:id="@+id/action_showPhoto_to_singlePhotoFragment"
+            app:destination="@id/singlePhotoFragment" />
+    </fragment>
     <fragment
         android:id="@+id/BluetoothFragment"
         android:name="nz.ac.canterbury.guessit.BluetoothFragment"
@@ -35,4 +39,8 @@
         android:name="nz.ac.canterbury.guessit.MapFragment"
         android:label="fragment_map"
         tools:layout="@layout/fragment_map" />
+    <fragment
+        android:id="@+id/singlePhotoFragment"
+        android:name="nz.ac.canterbury.guessit.SinglePhotoFragment"
+        android:label="SinglePhotoFragment" />
 </navigation>

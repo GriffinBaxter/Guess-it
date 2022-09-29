@@ -23,8 +23,10 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
 import androidx.core.content.FileProvider
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.io.*
@@ -66,7 +68,7 @@ class ShowPhotoFragment : Fragment(), PhotoAdapter.OnPhotoListener {
         }
 
         photosList = view.findViewById(R.id.photosList)
-        photosList.layoutManager = GridLayoutManager(requireContext(), 5)
+        photosList.layoutManager = GridLayoutManager(requireContext(), 3)
         photosList.adapter = photoAdapter
 
         val takePhotoButton: Button = view.findViewById(R.id.takePhotoButton)
@@ -215,17 +217,19 @@ class ShowPhotoFragment : Fragment(), PhotoAdapter.OnPhotoListener {
         val fis = FileInputStream(filePath)
         var thumbnailBitmap = BitmapFactory.decodeStream(fis)
         thumbnailBitmap = Bitmap.createScaledBitmap(
-            thumbnailBitmap, 128, 128, false
+            thumbnailBitmap, 256, 256, false
         )
         val fileOutputStream = FileOutputStream(thumbnailFile)
         thumbnailBitmap.compress(
-            Bitmap.CompressFormat.JPEG, 75, fileOutputStream
+            Bitmap.CompressFormat.JPEG, 85, fileOutputStream
         )
         fileOutputStream.close()
         return thumbnailFile
     }
 
     override fun onPhotoClick(position: Int) {
-        // TODO
+        val photo = viewModel.photos.value!![position]
+        val args = bundleOf("photoPath" to photo.file)
+        Navigation.findNavController(requireView()).navigate(R.id.action_showPhoto_to_singlePhotoFragment, args)
     }
 }
