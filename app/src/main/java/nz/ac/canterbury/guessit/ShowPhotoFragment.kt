@@ -1,9 +1,17 @@
 package nz.ac.canterbury.guessit
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.media.ExifInterface
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -21,6 +29,7 @@ import java.io.File
 import java.io.IOException
 import java.util.*
 
+
 private const val REQUEST_CAMERA = 110
 private const val REQUEST_GALLERY = 111
 
@@ -34,6 +43,9 @@ class ShowPhotoFragment : Fragment(), PhotoAdapter.OnPhotoListener {
 
     private val photoDirectory
         get() = File(requireContext().getExternalFilesDir(null), "guessit")
+
+    private val hasLocationPermissions
+        get() = requireActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
     private var currentPhotoPath = ""
 
@@ -70,12 +82,31 @@ class ShowPhotoFragment : Fragment(), PhotoAdapter.OnPhotoListener {
     }
 
     private fun takePhoto() {
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        val file = File(photoDirectory, "${UUID.randomUUID()}.jpg")
-        val uri = photoUri(file)
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
-        currentPhotoPath = file.absolutePath
-        startActivityForResult(intent, REQUEST_CAMERA)
+        if (!hasLocationPermissions) {
+            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
+        } else {
+            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            val file = File(photoDirectory, "${UUID.randomUUID()}.jpg")
+            val uri = photoUri(file)
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
+            currentPhotoPath = file.absolutePath
+            startActivityForResult(intent, REQUEST_CAMERA)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (
+            permissions.contains(Manifest.permission.ACCESS_FINE_LOCATION) &&
+            grantResults[permissions.indexOf(Manifest.permission.ACCESS_FINE_LOCATION)] == 0
+        ) {
+            takePhoto()
+        } else {
+            Toast.makeText(context, "The fine/precise location permission is required to take a photo.", Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun choosePhotoFromPhone() {
@@ -115,11 +146,36 @@ class ShowPhotoFragment : Fragment(), PhotoAdapter.OnPhotoListener {
         return null
     }
 
+    @SuppressLint("MissingPermission")
+    private fun addPhotoWithCurrentLocation() {
+        val locationManager = requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+        val listener = object : LocationListener {
+            override fun onLocationChanged(location: Location) {
+                viewModel.addPhoto(Photo(currentPhotoPath, location.latitude, location.longitude))
+                locationManager.removeUpdates(this)
+            }
+
+            override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?) {}
+            override fun onProviderEnabled(provider: String) {}
+            override fun onProviderDisabled(provider: String) {}
+        }
+
+        val provider = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            LocationManager.FUSED_PROVIDER
+        } else {
+            LocationManager.GPS_PROVIDER
+        }
+        if (hasLocationPermissions) {
+            locationManager.requestLocationUpdates(provider, 0, 0f, listener)
+        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
             REQUEST_CAMERA -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    viewModel.addPhoto(Photo(currentPhotoPath, 0.toFloat(), 0.toFloat()))  // TODO: get location when taking photo
+                    addPhotoWithCurrentLocation()
                 }
             }
             REQUEST_GALLERY -> {
@@ -130,7 +186,11 @@ class ShowPhotoFragment : Fragment(), PhotoAdapter.OnPhotoListener {
                         copyUriToUri(uri, photoUri)
                         val photoLocation = getPhotoLocation(file)
                         if (photoLocation != null) {
-                            viewModel.addPhoto(Photo(file.absolutePath, photoLocation[0], photoLocation[1]))
+                            viewModel.addPhoto(Photo(
+                                file.absolutePath,
+                                photoLocation[0].toDouble(),
+                                photoLocation[1].toDouble()
+                            ))
                         }
                     }
                 }
