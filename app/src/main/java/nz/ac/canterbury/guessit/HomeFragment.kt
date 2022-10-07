@@ -31,6 +31,12 @@ class HomeFragment : Fragment() {
             Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_BluetoothFragment2)
         }
 
+        val showNearbyButton: Button = view.findViewById(R.id.showNearbyButton)
+        showNearbyButton.setOnClickListener {
+            Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_nearbyFragment)
+        }
+
+
         return view
     }
 }

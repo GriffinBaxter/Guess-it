@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_homeFragment_to_mapFragment"
             app:destination="@id/mapFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_nearbyFragment"
+            app:destination="@id/nearbyFragment" />
     </fragment>
     <fragment
         android:id="@+id/showPhoto"
@@ -43,4 +46,9 @@
         android:id="@+id/singlePhotoFragment"
         android:name="nz.ac.canterbury.guessit.SinglePhotoFragment"
         android:label="SinglePhotoFragment" />
+    <fragment
+        android:id="@+id/nearbyFragment"
+        android:name="nz.ac.canterbury.guessit.NearbyFragment"
+        android:label="fragment_nearby"
+        tools:layout="@layout/fragment_nearby" />
 </navigation>
