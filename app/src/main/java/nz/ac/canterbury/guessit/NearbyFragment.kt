@@ -1,17 +1,23 @@
 package nz.ac.canterbury.guessit
 
+import android.Manifest
+import android.content.pm.PackageManager
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.annotation.CallSuper
+import androidx.core.app.ActivityCompat.recreate
+import androidx.core.content.ContextCompat.checkSelfPermission
 import com.google.android.gms.nearby.Nearby
-import com.google.android.gms.nearby.connection.ConnectionsClient
-import com.google.android.gms.nearby.connection.Strategy
+import com.google.android.gms.nearby.connection.*
 import nz.ac.canterbury.guessit.databinding.ActivityMainBinding
 import nz.ac.canterbury.guessit.databinding.FragmentNearbyBinding
 import java.util.*
+import kotlin.text.Charsets.UTF_8
 
 class NearbyFragment : Fragment() {
 
@@ -66,6 +72,31 @@ class NearbyFragment : Fragment() {
 //     */
 //    private lateinit var binding: NearbyFragmentBinding
 
+    // Callbacks for connections to other devices
+    private val connectionLifecycleCallback = object : ConnectionLifecycleCallback() {
+        override fun onConnectionInitiated(endpointId: String, info: ConnectionInfo) {
+            // Accepting a connection means you want to receive messages. Hence, the API expects
+            // that you attach a PayloadCall to the acceptance
+            connectionsClient.acceptConnection(endpointId, payloadCallback)
+            opponentName = "Opponent\n(${info.endpointName})"
+        }
+
+        override fun onConnectionResult(endpointId: String, result: ConnectionResolution) {
+            if (result.status.isSuccess) {
+                connectionsClient.stopAdvertising()
+                connectionsClient.stopDiscovery()
+                opponentEndpointId = endpointId
+                binding.opponentName.text = opponentName
+                binding.status.text = "Connected"
+                setGameControllerEnabled(true) // we can start playing
+            }
+        }
+
+        override fun onDisconnected(endpointId: String) {
+            resetGame()
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -79,6 +110,56 @@ class NearbyFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this).get(NearbyViewModel::class.java)
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                REQUEST_CODE_REQUIRED_PERMISSIONS
+            )
+        }
+    }
+
+    private fun startAdvertising() {
+        val options = AdvertisingOptions.Builder().setStrategy(STRATEGY).build()
+        // Note: Advertising may fail. To keep this demo simple, we don't handle failures.
+        connectionsClient.startAdvertising(
+            myCodeName,
+            "guessit.canterbury.ac.nz", // Just use package name
+            connectionLifecycleCallback,
+            options
+        )
+    }
+
+    // Callbacks for finding other devices
+    private val endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
+        override fun onEndpointFound(endpointId: String, info: DiscoveredEndpointInfo) {
+            connectionsClient.requestConnection(myCodeName, endpointId, connectionLifecycleCallback)
+        }
+
+        override fun onEndpointLost(endpointId: String) {
+        }
+    }
+
+
+    //    Note: This doesn't use shouldShowRequestPermissionRationale() for simplicity. We should follow the recommended best practice: https://developer.android.com/training/permissions/requesting#explain
+
+    @CallSuper
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        val errMsg = "Cannot start without required permissions"
+        if (requestCode == REQUEST_CODE_REQUIRED_PERMISSIONS) {
+            grantResults.forEach {
+                if (it == PackageManager.PERMISSION_DENIED) {
+                    Toast.makeText(requireContext(), errMsg, Toast.LENGTH_LONG).show()
+                    finish()
+                    return
+                }
+            }
+            recreate()
+        }
     }
 
     /**
@@ -116,6 +197,85 @@ class NearbyFragment : Fragment() {
             val treat = TREATS[generator.nextInt(TREATS.size)]
             return "$color $treat"
         }
+    }
+
+    /** Sends the user's selection of rock, paper, or scissors to the opponent. */
+    private fun sendGameChoice(choice: GameChoice) {
+        myChoice = choice
+        connectionsClient.sendPayload(
+            opponentEndpointId!!,
+            Payload.fromBytes(choice.name.toByteArray(UTF_8))
+        )
+        binding.status.text = "You chose ${choice.name}"
+        // For fair play, we will disable the game controller so that users don't change their
+        // choice in the middle of a game.
+        setGameControllerEnabled(false)
+    }
+
+    /**
+     * Enables/Disables the rock, paper and scissors buttons. Disabling the game controller
+     * prevents users from changing their minds after making a choice.
+     */
+    private fun setGameControllerEnabled(state: Boolean) {
+        binding.apply {
+            rock.isEnabled = state
+            paper.isEnabled = state
+            scissors.isEnabled = state
+        }
+    }
+
+    /** callback for receiving payloads */
+    private val payloadCallback: PayloadCallback = object : PayloadCallback() {
+        override fun onPayloadReceived(endpointId: String, payload: Payload) {
+            payload.asBytes()?.let {
+                opponentChoice = GameChoice.valueOf(String(it, UTF_8))
+            }
+        }
+
+        override fun onPayloadTransferUpdate(endpointId: String, update: PayloadTransferUpdate) {
+            // Determines the winner and updates game state/UI after both players have chosen.
+            // Feel free to refactor and extract this code into a different method
+            if (update.status == PayloadTransferUpdate.Status.SUCCESS
+                && myChoice != null && opponentChoice != null) {
+                val mc = myChoice!!
+                val oc = opponentChoice!!
+                when {
+                    mc.beats(oc) -> { // Win!
+                        binding.status.text = "${mc.name} beats ${oc.name}"
+                        myScore++
+                    }
+                    mc == oc -> { // Tie
+                        binding.status.text = "You both chose ${mc.name}"
+                    }
+                    else -> { // Loss
+                        binding.status.text = "${mc.name} loses to ${oc.name}"
+                        opponentScore++
+                    }
+                }
+                binding.score.text = "$myScore : $opponentScore"
+                myChoice = null
+                opponentChoice = null
+                setGameControllerEnabled(true)
+            }
+        }
+    }
+
+    /** Wipes all game state and updates the UI accordingly. */
+    private fun resetGame() {
+        // reset data
+        opponentEndpointId = null
+        opponentName = null
+        opponentChoice = null
+        opponentScore = 0
+        myChoice = null
+        myScore = 0
+        // reset state of views
+        binding.disconnect.visibility = View.GONE
+        binding.findOpponent.visibility = View.VISIBLE
+        setGameControllerEnabled(false)
+        binding.opponentName.text= "opponent\n(none yet)"
+        binding.status.text = "..."
+        binding.score.text = ":"
     }
 
 }
