@@ -1,0 +1,24 @@
+package nz.ac.canterbury.guessit.ui.search
+
+import android.os.Bundle
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
+import nz.ac.canterbury.guessit.R
+
+class WaitFragment : Fragment() {
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_wait, container, false)
+
+        // TODO: navigate to map when photo chosen
+
+        return view
+    }
+
+}

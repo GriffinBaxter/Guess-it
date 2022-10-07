@@ -22,6 +22,9 @@
         <action
             android:id="@+id/action_homeFragment_to_nearbyFragment"
             app:destination="@id/nearbyFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
     </fragment>
     <fragment
         android:id="@+id/showPhoto"
@@ -51,4 +54,21 @@
         android:name="nz.ac.canterbury.guessit.ui.nearby.NearbyFragment"
         android:label="fragment_nearby"
         tools:layout="@layout/fragment_nearby" />
+    <fragment
+        android:id="@+id/waitFragment"
+        android:name="nz.ac.canterbury.guessit.ui.search.WaitFragment"
+        android:label="fragment_wait"
+        tools:layout="@layout/fragment_wait" />
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="nz.ac.canterbury.guessit.ui.search.SearchFragment"
+        android:label="fragment_search"
+        tools:layout="@layout/fragment_search" >
+        <action
+            android:id="@+id/action_searchFragment_to_waitFragment"
+            app:destination="@id/waitFragment" />
+        <action
+            android:id="@+id/action_searchFragment_to_showPhoto"
+            app:destination="@id/showPhoto" />
+    </fragment>
 </navigation>

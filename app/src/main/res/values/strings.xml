@@ -11,4 +11,7 @@
     <string name="choose_a_photo_to_show">Choose a Photo to Show</string>
     <string name="image_description_title">Features of Photo:</string>
     <string name="guess_button_on_map">Guess</string>
+    <string name="searching_for_host">Searching For Host…</string>
+    <string name="searching_for_player">Searching For Player…</string>
+    <string name="waiting_for_photo_to_be_chosen">Waiting for Host to Choose Photo...</string>
 </resources>
