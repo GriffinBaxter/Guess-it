@@ -14,13 +14,12 @@ import com.mapbox.maps.MapView
 import com.mapbox.maps.MapboxMap
 import com.mapbox.maps.Style
 import com.mapbox.maps.plugin.annotation.annotations
-import com.mapbox.maps.plugin.annotation.generated.CircleAnnotationOptions
-import com.mapbox.maps.plugin.annotation.generated.createCircleAnnotationManager
+import com.mapbox.maps.plugin.annotation.generated.*
 import com.mapbox.maps.plugin.gestures.addOnMapClickListener
 import com.mapbox.maps.plugin.scalebar.scalebar
-import nz.ac.canterbury.guessit.controller.ImageLabeler
 import nz.ac.canterbury.guessit.MainActivity
 import nz.ac.canterbury.guessit.R
+import nz.ac.canterbury.guessit.controller.ImageLabeler
 import kotlin.math.roundToInt
 
 
@@ -36,7 +35,10 @@ class MapFragment : Fragment() {
 
     lateinit var imageLabeler: ImageLabeler
 
-    var testPoint = Point.fromLngLat(172.604180, -43.303350)
+    var imagePoint = Point.fromLngLat(172.604180, -43.303350)
+
+    lateinit var circleAnnotationManager: CircleAnnotationManager
+    lateinit var polylineAnnotationManager: PolylineAnnotationManager
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -59,24 +61,13 @@ class MapFragment : Fragment() {
 
         // Create an instance of the Annotation API and get the CircleAnnotationManager.
         val annotationApi = mapView.annotations
-        val circleAnnotationManager = annotationApi.createCircleAnnotationManager()
+        circleAnnotationManager = annotationApi.createCircleAnnotationManager()
+        polylineAnnotationManager = annotationApi.createPolylineAnnotationManager()
 
         mapboxMap.addOnMapClickListener { point ->
             selectedPoint = point
 
-            //Adding marker to map
-            circleAnnotationManager.deleteAll()
-            // Set options for the resulting circle layer.
-            val circleAnnotationOptions: CircleAnnotationOptions = CircleAnnotationOptions()
-                // Define a geographic coordinate.
-                .withPoint(selectedPoint)
-                // Style the circle that will be added to the map.
-                .withCircleRadius(8.0)
-                .withCircleColor("#3399ff")
-                .withCircleStrokeWidth(2.0)
-                .withCircleStrokeColor("#ffffff")
-            // Add the resulting circle to the map.
-            circleAnnotationManager.create(circleAnnotationOptions)
+            addPoint()
 
             map_guessButton.isEnabled = true
 
@@ -93,7 +84,8 @@ class MapFragment : Fragment() {
     }
 
     private fun manageGuess() {
-        val distance = getDistance(testPoint, selectedPoint)
+        val distance = getDistance(imagePoint, selectedPoint)
+        addLine()
 
         Toast.makeText(activity as MainActivity, "Latitude: ${selectedPoint.latitude()}\nLongitude: ${selectedPoint.longitude()}\nDistance: ${(distance * 100.0).roundToInt() / 100.0}km", Toast.LENGTH_SHORT).show()
     }
@@ -120,5 +112,38 @@ class MapFragment : Fragment() {
     //This function converts radians to decimal degrees
     private fun rad2deg(rad: Double): Double {
         return rad * 180.0 / Math.PI
+    }
+
+
+    private fun addPoint() {
+        circleAnnotationManager.deleteAll()
+        // Set options for the resulting circle layer.
+        val circleAnnotationOptions: CircleAnnotationOptions = CircleAnnotationOptions()
+            // Define a geographic coordinate.
+            .withPoint(selectedPoint)
+            // Style the circle that will be added to the map.
+            .withCircleRadius(8.0)
+            .withCircleColor("#3399ff")
+            .withCircleStrokeWidth(2.0)
+            .withCircleStrokeColor("#ffffff")
+        // Add the resulting circle to the map.
+        circleAnnotationManager.create(circleAnnotationOptions)
+    }
+
+
+    private fun addLine() {
+        polylineAnnotationManager.deleteAll()
+        // Set options for the resulting line layer.
+        val polylineAnnotationOptions: PolylineAnnotationOptions = PolylineAnnotationOptions()
+            .withPoints(arrayListOf(imagePoint, selectedPoint))
+            // Style the line that will be added to the map.
+            .withLineColor("#008080")
+            .withLineWidth(5.0)
+        //Make the line dashed
+        polylineAnnotationManager.lineDasharray = listOf(2.0, 0.5)
+
+        // Add the resulting line to the map.
+        polylineAnnotationManager.create(polylineAnnotationOptions)
+
     }
 }
