@@ -1,5 +1,6 @@
 package nz.ac.canterbury.guessit
 
+
 import android.Manifest
 import android.content.pm.PackageManager
 import androidx.lifecycle.ViewModelProvider
@@ -14,7 +15,6 @@ import androidx.core.app.ActivityCompat.recreate
 import androidx.core.content.ContextCompat.checkSelfPermission
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.*
-import nz.ac.canterbury.guessit.databinding.ActivityMainBinding
 import nz.ac.canterbury.guessit.databinding.FragmentNearbyBinding
 import java.util.*
 import kotlin.text.Charsets.UTF_8
@@ -67,6 +67,8 @@ class NearbyFragment : Fragment() {
     private var myScore = 0
     private var myChoice: GameChoice? = null
 
+    private val packagename: String = "guessit.canterbury.ac.nz"
+
 //    /**
 //     * This is for wiring and interacting with the UI views.
 //     */
@@ -110,12 +112,47 @@ class NearbyFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this).get(NearbyViewModel::class.java)
-        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        // TODO: Update this to modern check
+        if (checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                 REQUEST_CODE_REQUIRED_PERMISSIONS
             )
         }
+
+        binding.myName.text = "You\n($myCodeName)"
+        binding.findOpponent.setOnClickListener {
+            startAdvertising()
+            startDiscovery()
+            binding.status.text = "Searching for opponents..."
+            // "find opponents" is the opposite of "disconnect" so they don't both need to be
+            // visible at the same time
+            binding.findOpponent.visibility = View.GONE
+            binding.disconnect.visibility = View.VISIBLE
+        }
+        // wire the controller buttons
+        binding.apply {
+            rock.setOnClickListener { sendGameChoice(GameChoice.ROCK) }
+            paper.setOnClickListener { sendGameChoice(GameChoice.PAPER) }
+            scissors.setOnClickListener { sendGameChoice(GameChoice.SCISSORS) }
+        }
+        binding.disconnect.setOnClickListener {
+            opponentEndpointId?.let { connectionsClient.disconnectFromEndpoint(it) }
+            resetGame()
+        }
+
+        resetGame() // we are about to start a new game
+    }
+
+    @CallSuper
+    override fun onStop(){
+        connectionsClient.apply {
+            stopAdvertising()
+            stopDiscovery()
+            stopAllEndpoints()
+        }
+        resetGame()
+        super.onStop()
     }
 
     private fun startAdvertising() {
@@ -123,7 +160,7 @@ class NearbyFragment : Fragment() {
         // Note: Advertising may fail. To keep this demo simple, we don't handle failures.
         connectionsClient.startAdvertising(
             myCodeName,
-            "guessit.canterbury.ac.nz", // Just use package name
+            packagename, // Just use package name
             connectionLifecycleCallback,
             options
         )
@@ -137,6 +174,11 @@ class NearbyFragment : Fragment() {
 
         override fun onEndpointLost(endpointId: String) {
         }
+    }
+
+    private fun startDiscovery(){
+        val options = DiscoveryOptions.Builder().setStrategy(STRATEGY).build()
+        connectionsClient.startDiscovery(packagename, endpointDiscoveryCallback, options)
     }
 
 
@@ -154,11 +196,11 @@ class NearbyFragment : Fragment() {
             grantResults.forEach {
                 if (it == PackageManager.PERMISSION_DENIED) {
                     Toast.makeText(requireContext(), errMsg, Toast.LENGTH_LONG).show()
-                    finish()
+//                    finish()
                     return
                 }
             }
-            recreate()
+            recreate(requireActivity())
         }
     }
 
