@@ -36,7 +36,6 @@ class HomeFragment : Fragment() {
             Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_nearbyFragment)
         }
 
-
         return view
     }
 }

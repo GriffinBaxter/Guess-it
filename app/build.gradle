@@ -81,12 +81,14 @@ dependencies {
     implementation ('com.mapbox.maps:android:10.8.0')
     implementation 'com.google.android.gms:play-services-location:20.0.0'
 
-    //MLKit
+    // MLKit
     implementation 'com.google.mlkit:image-labeling:17.0.7'
 
     // Picasso
     implementation 'com.squareup.picasso:picasso:2.8'
 
+    // Nearby
+    implementation 'com.google.android.gms:play-services-nearby:18.3.0'
 }
 
 // Allow references to generated code
