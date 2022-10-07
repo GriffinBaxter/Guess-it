@@ -117,6 +117,7 @@ class MapFragment : Fragment() {
 
     private fun addPoint() {
         circleAnnotationManager.deleteAll()
+        //Selected point
         // Set options for the resulting circle layer.
         val circleAnnotationOptions: CircleAnnotationOptions = CircleAnnotationOptions()
             // Define a geographic coordinate.
@@ -144,6 +145,19 @@ class MapFragment : Fragment() {
 
         // Add the resulting line to the map.
         polylineAnnotationManager.create(polylineAnnotationOptions)
+
+        //Image point
+        // Set options for the resulting circle layer.
+        val circleAnnotationOptions = CircleAnnotationOptions()
+            // Define a geographic coordinate.
+            .withPoint(imagePoint)
+            // Style the circle that will be added to the map.
+            .withCircleRadius(8.0)
+            .withCircleColor("#FF0000")
+            .withCircleStrokeWidth(2.0)
+            .withCircleStrokeColor("#ffffff")
+        // Add the resulting circle to the map.
+        circleAnnotationManager.create(circleAnnotationOptions)
 
     }
 }
