@@ -1,4 +1,4 @@
-package nz.ac.canterbury.guessit.Database
+package nz.ac.canterbury.guessit.database
 
 import android.content.Context
 import androidx.room.Database

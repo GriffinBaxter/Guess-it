@@ -1,4 +1,4 @@
-package nz.ac.canterbury.guessit.UI.Fragment
+package nz.ac.canterbury.guessit.ui.nearby
 
 
 import android.Manifest
@@ -22,7 +22,6 @@ import androidx.core.app.ActivityCompat.recreate
 import androidx.core.content.ContextCompat.checkSelfPermission
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.*
-import nz.ac.canterbury.guessit.UI.NearbyViewModel
 import nz.ac.canterbury.guessit.databinding.FragmentNearbyBinding
 import java.util.*
 import kotlin.text.Charsets.UTF_8

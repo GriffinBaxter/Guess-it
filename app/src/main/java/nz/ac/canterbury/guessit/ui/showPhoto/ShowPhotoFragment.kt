@@ -1,4 +1,4 @@
-package nz.ac.canterbury.guessit.UI.Fragment
+package nz.ac.canterbury.guessit.ui.showPhoto
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -28,8 +28,7 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import nz.ac.canterbury.guessit.*
-import nz.ac.canterbury.guessit.Database.Photo
-import nz.ac.canterbury.guessit.UI.PhotoAdapter
+import nz.ac.canterbury.guessit.database.Photo
 import java.io.*
 import java.util.*
 

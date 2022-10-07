@@ -1,4 +1,4 @@
-package nz.ac.canterbury.guessit.UI.Fragment
+package nz.ac.canterbury.guessit.ui.singlePhoto
 
 import android.graphics.BitmapFactory
 import android.os.Bundle
@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import com.squareup.picasso.Picasso
-import nz.ac.canterbury.guessit.Controller.ImageLabeler
+import nz.ac.canterbury.guessit.controller.ImageLabeler
 import nz.ac.canterbury.guessit.MainActivity
 import nz.ac.canterbury.guessit.R
 

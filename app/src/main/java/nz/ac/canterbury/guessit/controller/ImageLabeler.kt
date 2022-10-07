@@ -1,4 +1,4 @@
-package nz.ac.canterbury.guessit.Controller
+package nz.ac.canterbury.guessit.controller
 
 import android.app.Activity
 import android.graphics.Bitmap

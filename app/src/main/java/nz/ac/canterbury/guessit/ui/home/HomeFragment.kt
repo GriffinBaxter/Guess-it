@@ -1,4 +1,4 @@
-package nz.ac.canterbury.guessit.UI.Fragment
+package nz.ac.canterbury.guessit.ui.home
 
 import android.os.Bundle
 import android.view.LayoutInflater

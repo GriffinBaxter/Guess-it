@@ -1,10 +1,12 @@
-package nz.ac.canterbury.guessit.UI
+package nz.ac.canterbury.guessit.ui.bluetooth
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class NearbyViewModel @Inject constructor(): ViewModel() {
+class BluetoothViewModel @Inject constructor(
+
+) : ViewModel() {
 
 }

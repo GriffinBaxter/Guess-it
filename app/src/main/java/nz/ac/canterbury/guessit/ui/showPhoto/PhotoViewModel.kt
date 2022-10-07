@@ -1,9 +1,9 @@
-package nz.ac.canterbury.guessit
+package nz.ac.canterbury.guessit.ui.showPhoto
 
 import androidx.lifecycle.*
 import kotlinx.coroutines.launch
-import nz.ac.canterbury.guessit.Database.Photo
-import nz.ac.canterbury.guessit.Database.PhotoRepository
+import nz.ac.canterbury.guessit.database.Photo
+import nz.ac.canterbury.guessit.database.PhotoRepository
 
 class PhotoViewModel(private val photoRepository: PhotoRepository): ViewModel() {
 

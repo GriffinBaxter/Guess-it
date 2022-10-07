@@ -1,4 +1,4 @@
-package nz.ac.canterbury.guessit.UI.Fragment
+package nz.ac.canterbury.guessit.ui.bluetooth
 
 import android.Manifest
 import android.app.Activity
@@ -28,7 +28,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import nz.ac.canterbury.guessit.UI.BluetoothViewModel
 import nz.ac.canterbury.guessit.R
 
 private const val SELECT_DEVICE_REQUEST_CODE = 0

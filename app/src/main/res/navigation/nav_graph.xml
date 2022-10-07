@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="nz.ac.canterbury.guessit.UI.Fragment.HomeFragment"
+        android:name="nz.ac.canterbury.guessit.ui.home.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home">
         <action
@@ -25,7 +25,7 @@
     </fragment>
     <fragment
         android:id="@+id/showPhoto"
-        android:name="nz.ac.canterbury.guessit.UI.Fragment.ShowPhotoFragment"
+        android:name="nz.ac.canterbury.guessit.ui.ShowPhotoFragment"
         android:label="fragment_show_photo"
         tools:layout="@layout/fragment_show_photo" >
         <action
@@ -34,21 +34,21 @@
     </fragment>
     <fragment
         android:id="@+id/BluetoothFragment"
-        android:name="nz.ac.canterbury.guessit.UI.Fragment.BluetoothFragment"
+        android:name="nz.ac.canterbury.guessit.ui.bluetooth.BluetoothFragment"
         android:label="fragment_bluetooth"
         tools:layout="@layout/fragment_bluetooth"/>
     <fragment
         android:id="@+id/mapFragment"
-        android:name="nz.ac.canterbury.guessit.UI.Fragment.MapFragment"
+        android:name="nz.ac.canterbury.guessit.ui.map.MapFragment"
         android:label="fragment_map"
         tools:layout="@layout/fragment_map" />
     <fragment
         android:id="@+id/singlePhotoFragment"
-        android:name="nz.ac.canterbury.guessit.UI.Fragment.SinglePhotoFragment"
+        android:name="nz.ac.canterbury.guessit.ui.singlePhoto.SinglePhotoFragment"
         android:label="SinglePhotoFragment" />
     <fragment
         android:id="@+id/nearbyFragment"
-        android:name="nz.ac.canterbury.guessit.UI.Fragment.NearbyFragment"
+        android:name="nz.ac.canterbury.guessit.ui.nearby.NearbyFragment"
         android:label="fragment_nearby"
         tools:layout="@layout/fragment_nearby" />
 </navigation>
