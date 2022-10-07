@@ -24,9 +24,11 @@ import androidx.core.content.FileProvider
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import dagger.hilt.android.AndroidEntryPoint
 import nz.ac.canterbury.guessit.*
 import nz.ac.canterbury.guessit.database.Photo
 import java.io.*
@@ -36,13 +38,16 @@ import java.util.*
 private const val REQUEST_CAMERA = 110
 private const val REQUEST_GALLERY = 111
 
+@AndroidEntryPoint
 class ShowPhotoFragment : Fragment(), PhotoAdapter.OnPhotoListener {
 
     private lateinit var photosList: RecyclerView
 
-    private val viewModel: PhotoViewModel by activityViewModels() {
-        PhotoViewModelFactory((requireActivity().application as SENGApplication).repository)
-    }
+//    private val viewModel: PhotoViewModel by activityViewModels() {
+//        PhotoViewModelFactory((requireActivity().application as SENGApplication).repository)
+//    }
+
+    private val photoViewModel: PhotoViewModel by viewModels()
 
     private val photoDirectory
         get() = File(requireContext().getExternalFilesDir(null), "guessit")
@@ -63,7 +68,7 @@ class ShowPhotoFragment : Fragment(), PhotoAdapter.OnPhotoListener {
         }
 
         val photoAdapter = PhotoAdapter(listOf(), this)
-        viewModel.photos.observe(viewLifecycleOwner) { newPhotos ->
+        photoViewModel.photos.observe(viewLifecycleOwner) { newPhotos ->
             photoAdapter.setData(newPhotos)
         }
 
@@ -155,7 +160,7 @@ class ShowPhotoFragment : Fragment(), PhotoAdapter.OnPhotoListener {
 
         val listener = object : LocationListener {
             override fun onLocationChanged(location: Location) {
-                viewModel.addPhoto(
+                photoViewModel.addPhoto(
                     Photo(
                     currentPhotoPath,
                     location.latitude,
@@ -195,7 +200,7 @@ class ShowPhotoFragment : Fragment(), PhotoAdapter.OnPhotoListener {
                         copyUriToUri(uri, photoUri)
                         val photoLocation = getPhotoLocation(file)
                         if (photoLocation != null) {
-                            viewModel.addPhoto(
+                            photoViewModel.addPhoto(
                                 Photo(
                                 file.absolutePath,
                                 photoLocation[0].toDouble(),
@@ -213,7 +218,7 @@ class ShowPhotoFragment : Fragment(), PhotoAdapter.OnPhotoListener {
     }
 
     override fun onPhotoClick(position: Int) {
-        val photo = viewModel.photos.value!![position]
+        val photo = photoViewModel.photos.value!![position]
         val args = bundleOf(
             "photoPath" to photo.file, "latitude" to photo.latitude.toString(), "longitude" to photo.longitude.toString()
         )

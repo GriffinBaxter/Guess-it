@@ -1,15 +1,9 @@
 package nz.ac.canterbury.guessit.database
 
-import androidx.annotation.WorkerThread
 import kotlinx.coroutines.flow.Flow
 
-class PhotoRepository(private val photoDao: PhotoDao) {
-    val photos: Flow<List<Photo>> = photoDao.getAll()
-    val numPhotos: Flow<Int> = photoDao.getCount()
-
-    @Suppress("RedundantSuspendModifier")
-    @WorkerThread
-    suspend fun insert(photo: Photo) {
-        photoDao.insert(photo)
-    }
+interface PhotoRepository {
+    val photos: Flow<List<Photo>>
+    val numPhotos: Flow<Int>
+    suspend fun insert(photo: Photo)
 }

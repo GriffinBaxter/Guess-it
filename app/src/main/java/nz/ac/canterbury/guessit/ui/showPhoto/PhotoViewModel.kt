@@ -1,11 +1,17 @@
 package nz.ac.canterbury.guessit.ui.showPhoto
 
 import androidx.lifecycle.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import nz.ac.canterbury.guessit.database.Photo
 import nz.ac.canterbury.guessit.database.PhotoRepository
+import nz.ac.canterbury.guessit.database.PhotoRepositoryImpl
+import javax.inject.Inject
 
-class PhotoViewModel(private val photoRepository: PhotoRepository): ViewModel() {
+@HiltViewModel
+class PhotoViewModel @Inject constructor(
+    private val photoRepository: PhotoRepository
+): ViewModel() {
 
     val photos: LiveData<List<Photo>> = photoRepository.photos.asLiveData()
     val numPhotos: LiveData<Int> = photoRepository.numPhotos.asLiveData()
@@ -14,14 +20,4 @@ class PhotoViewModel(private val photoRepository: PhotoRepository): ViewModel() 
         photoRepository.insert(photo)
     }
 
-}
-
-class PhotoViewModelFactory(private val repository: PhotoRepository) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(PhotoViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return PhotoViewModel(repository) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
 }

@@ -25,7 +25,7 @@
     </fragment>
     <fragment
         android:id="@+id/showPhoto"
-        android:name="nz.ac.canterbury.guessit.ui.ShowPhotoFragment"
+        android:name="nz.ac.canterbury.guessit.ui.showPhoto.ShowPhotoFragment"
         android:label="fragment_show_photo"
         tools:layout="@layout/fragment_show_photo" >
         <action
