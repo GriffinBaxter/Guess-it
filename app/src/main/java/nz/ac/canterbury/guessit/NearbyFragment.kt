@@ -2,15 +2,22 @@ package nz.ac.canterbury.guessit
 
 
 import android.Manifest
+import android.app.Activity
+import android.bluetooth.BluetoothAdapter
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.CallSuper
+import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.recreate
 import androidx.core.content.ContextCompat.checkSelfPermission
 import com.google.android.gms.nearby.Nearby
@@ -81,10 +88,13 @@ class NearbyFragment : Fragment() {
             // that you attach a PayloadCall to the acceptance
             connectionsClient.acceptConnection(endpointId, payloadCallback)
             opponentName = "Opponent\n(${info.endpointName})"
+            Log.e("HERE", "onConnectionInitiated")
         }
 
         override fun onConnectionResult(endpointId: String, result: ConnectionResolution) {
+            Log.e("HERE", "ONCONNECTIONRESULT")
             if (result.status.isSuccess) {
+                Log.e("HERE", "ONCONNECTIONRESULT1")
                 connectionsClient.stopAdvertising()
                 connectionsClient.stopDiscovery()
                 opponentEndpointId = endpointId
@@ -108,6 +118,12 @@ class NearbyFragment : Fragment() {
         connectionsClient = Nearby.getConnectionsClient(requireContext())
         return view
     }
+    private val requestMultiplePermissions =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            permissions.entries.forEach {
+                Log.d("test006", "${it.key} = ${it.value}")
+            }
+        }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -120,8 +136,34 @@ class NearbyFragment : Fragment() {
             )
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            requestMultiplePermissions.launch(arrayOf(
+                Manifest.permission.BLUETOOTH_SCAN,
+                Manifest.permission.BLUETOOTH_CONNECT,
+                Manifest.permission.BLUETOOTH_ADVERTISE
+            ))
+        }
+        else{
+            val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+            requestBluetooth.launch(enableBtIntent)
+        }
+
         binding.myName.text = "You\n($myCodeName)"
         binding.findOpponent.setOnClickListener {
+            if (ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.BLUETOOTH_SCAN
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return@setOnClickListener
+            }
             startAdvertising()
             startDiscovery()
             binding.status.text = "Searching for opponents..."
@@ -142,6 +184,16 @@ class NearbyFragment : Fragment() {
         }
 
         resetGame() // we are about to start a new game
+    }
+
+    private var requestBluetooth = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            //granted
+            Log.e("PERMISSIONS", "BT granted")
+        }else{
+            //deny
+            Log.e("PERMISSIONS", "BT denied")
+        }
     }
 
     @CallSuper
