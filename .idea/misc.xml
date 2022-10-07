@@ -12,10 +12,11 @@
         <entry key="app/src/main/res/layout/content_main.xml" value="0.18229166666666666" />
         <entry key="app/src/main/res/layout/fragment_bluetooth.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_first.xml" value="0.2803442028985507" />
-        <entry key="app/src/main/res/layout/fragment_home.xml" value="0.16822916666666668" />
-        <entry key="app/src/main/res/layout/fragment_search.xml" value="0.1828774062816616" />
+        <entry key="app/src/main/res/layout/fragment_home.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/fragment_nearby.xml" value="0.21927083333333333" />
+        <entry key="app/src/main/res/layout/fragment_search.xml" value="0.21927083333333333" />
         <entry key="app/src/main/res/layout/fragment_show_photo.xml" value="0.15" />
-        <entry key="app/src/main/res/layout/fragment_wait.xml" value="0.19583333333333333" />
+        <entry key="app/src/main/res/layout/fragment_wait.xml" value="0.12552083333333333" />
         <entry key="app/src/main/res/menu/menu_main.xml" value="0.35520833333333335" />
       </map>
     </option>
