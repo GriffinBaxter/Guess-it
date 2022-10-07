@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:key="darkMode"
+        android:summary="Dark Mode Enabled"
+        android:title="Dark Mode" />
+
+    <ListPreference
+        android:key="galleryWidth"
+        android:summary="Number of photos to display in each row"
+        android:title="Gallery Width"
+        android:entries="@array/galleryOptions" />
+</PreferenceScreen>
