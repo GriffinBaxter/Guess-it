@@ -1,4 +1,4 @@
-package nz.ac.canterbury.guessit
+package nz.ac.canterbury.guessit.Database
 
 import androidx.annotation.WorkerThread
 import kotlinx.coroutines.flow.Flow

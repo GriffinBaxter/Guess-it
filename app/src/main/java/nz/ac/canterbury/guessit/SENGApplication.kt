@@ -2,6 +2,8 @@ package nz.ac.canterbury.guessit
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
+import nz.ac.canterbury.guessit.Database.PhotoDatabase
+import nz.ac.canterbury.guessit.Database.PhotoRepository
 
 @HiltAndroidApp
 class SENGApplication: Application() {

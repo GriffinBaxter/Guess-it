@@ -1,4 +1,4 @@
-package nz.ac.canterbury.guessit
+package nz.ac.canterbury.guessit.UI
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel

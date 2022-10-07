@@ -1,4 +1,4 @@
-package nz.ac.canterbury.guessit
+package nz.ac.canterbury.guessit.UI
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
+import nz.ac.canterbury.guessit.Database.Photo
+import nz.ac.canterbury.guessit.R
 
 class PhotoAdapter(private var photos: List<Photo>, private val onPhotoListener: OnPhotoListener)
     : RecyclerView.Adapter<PhotoAdapter.PhotoViewHolder>() {

@@ -1,4 +1,4 @@
-package nz.ac.canterbury.guessit
+package nz.ac.canterbury.guessit.Controller
 
 import android.app.Activity
 import android.graphics.Bitmap
@@ -7,6 +7,7 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.label.ImageLabel
 import com.google.mlkit.vision.label.ImageLabeling
 import com.google.mlkit.vision.label.defaults.ImageLabelerOptions
+import nz.ac.canterbury.guessit.MainActivity
 import java.io.IOException
 
 class ImageLabeler(var activity: Activity) {

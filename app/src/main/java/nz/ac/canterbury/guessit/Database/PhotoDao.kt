@@ -1,4 +1,4 @@
-package nz.ac.canterbury.guessit
+package nz.ac.canterbury.guessit.Database
 
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow

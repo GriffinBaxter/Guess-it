@@ -1,4 +1,4 @@
-package nz.ac.canterbury.guessit
+package nz.ac.canterbury.guessit.UI.Fragment
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -27,6 +27,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import nz.ac.canterbury.guessit.*
+import nz.ac.canterbury.guessit.Database.Photo
+import nz.ac.canterbury.guessit.UI.PhotoAdapter
 import java.io.*
 import java.util.*
 
@@ -153,11 +156,13 @@ class ShowPhotoFragment : Fragment(), PhotoAdapter.OnPhotoListener {
 
         val listener = object : LocationListener {
             override fun onLocationChanged(location: Location) {
-                viewModel.addPhoto(Photo(
+                viewModel.addPhoto(
+                    Photo(
                     currentPhotoPath,
                     location.latitude,
                     location.longitude,
-                ))
+                )
+                )
                 locationManager.removeUpdates(this)
             }
 
@@ -191,11 +196,13 @@ class ShowPhotoFragment : Fragment(), PhotoAdapter.OnPhotoListener {
                         copyUriToUri(uri, photoUri)
                         val photoLocation = getPhotoLocation(file)
                         if (photoLocation != null) {
-                            viewModel.addPhoto(Photo(
+                            viewModel.addPhoto(
+                                Photo(
                                 file.absolutePath,
                                 photoLocation[0].toDouble(),
                                 photoLocation[1].toDouble(),
-                            ))
+                            )
+                            )
                         }
                     }
                 }

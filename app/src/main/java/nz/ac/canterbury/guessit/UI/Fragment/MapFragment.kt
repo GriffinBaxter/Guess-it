@@ -1,11 +1,7 @@
-package nz.ac.canterbury.guessit
+package nz.ac.canterbury.guessit.UI.Fragment
 
 
-import android.app.Activity.RESULT_OK
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +18,9 @@ import com.mapbox.maps.plugin.annotation.generated.CircleAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createCircleAnnotationManager
 import com.mapbox.maps.plugin.gestures.addOnMapClickListener
 import com.mapbox.maps.plugin.scalebar.scalebar
+import nz.ac.canterbury.guessit.Controller.ImageLabeler
+import nz.ac.canterbury.guessit.MainActivity
+import nz.ac.canterbury.guessit.R
 import kotlin.math.roundToInt
 
 
