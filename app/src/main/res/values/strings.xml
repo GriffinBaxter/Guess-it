@@ -20,4 +20,5 @@
     <string name="map_guess_betterLuckNextTime">Better Luck Next Time!</string>
     <string name="map_distanceFrom">You were %1$.2fkm from the correct location</string>
     <string name="map_pointsEarned">You earned %1$d points</string>
+    <string name="preferences">Preferences</string>
 </resources>

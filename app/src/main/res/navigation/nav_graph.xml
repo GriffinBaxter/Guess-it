@@ -25,6 +25,9 @@
         <action
             android:id="@+id/action_homeFragment_to_searchFragment"
             app:destination="@id/searchFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_preferencesFragment"
+            app:destination="@id/preferencesFragment" />
     </fragment>
     <fragment
         android:id="@+id/showPhoto"
@@ -71,4 +74,8 @@
             android:id="@+id/action_searchFragment_to_showPhoto"
             app:destination="@id/showPhoto" />
     </fragment>
+    <fragment
+        android:id="@+id/preferencesFragment"
+        android:name="nz.ac.canterbury.guessit.controller.SettingsFragment"
+        android:label="PreferencesFragment" />
 </navigation>
