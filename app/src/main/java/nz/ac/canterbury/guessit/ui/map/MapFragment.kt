@@ -2,14 +2,18 @@ package nz.ac.canterbury.guessit.ui.map
 
 
 import android.os.Bundle
+import android.util.DisplayMetrics
+import android.view.Display
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.mapbox.geojson.Point
+import com.mapbox.geojson.Polygon
+import com.mapbox.maps.EdgeInsets
 import com.mapbox.maps.MapView
 import com.mapbox.maps.MapboxMap
 import com.mapbox.maps.Style
@@ -29,9 +33,15 @@ class MapFragment : Fragment() {
     lateinit var photoDescriptionTextView: TextView
     lateinit var mapView: MapView
     lateinit var map_guessButton: Button
+    lateinit var resultsLayout: LinearLayout
 
     lateinit var mapboxMap: MapboxMap
     lateinit var selectedPoint: Point
+
+    lateinit var resultsTitle: TextView
+    lateinit var distanceText: TextView
+    lateinit var pointsEarned: TextView
+    lateinit var continueButton: Button
 
     lateinit var imageLabeler: ImageLabeler
 
@@ -49,6 +59,14 @@ class MapFragment : Fragment() {
         val view: View = inflater.inflate(R.layout.fragment_map, container, false)
 
         imageLabeler = ImageLabeler(activity as MainActivity)
+
+        resultsLayout = view.findViewById(R.id.map_resultsLayout)
+        resultsLayout.visibility = View.INVISIBLE
+
+        resultsTitle = view.findViewById(R.id.resultsTitle)
+        distanceText = view.findViewById(R.id.distanceText)
+        pointsEarned = view.findViewById(R.id.pointsEarnedText)
+        continueButton = view.findViewById(R.id.map_continueButton)
 
 
         photoDescriptionTextView = view.findViewById(R.id.photoFeatures)
@@ -80,6 +98,10 @@ class MapFragment : Fragment() {
         }
         map_guessButton.isEnabled = false
 
+        continueButton.setOnClickListener {
+            //Do something here
+        }
+
         return view
     }
 
@@ -87,7 +109,20 @@ class MapFragment : Fragment() {
         val distance = getDistance(imagePoint, selectedPoint)
         addLine()
 
-        Toast.makeText(activity as MainActivity, "Latitude: ${selectedPoint.latitude()}\nLongitude: ${selectedPoint.longitude()}\nDistance: ${(distance * 100.0).roundToInt() / 100.0}km", Toast.LENGTH_SHORT).show()
+        val score = calculateScore(distance)
+
+        map_guessButton.visibility = View.INVISIBLE
+        resultsLayout.visibility = View.VISIBLE
+
+        if (score < 100) resultsTitle.text = getString(R.string.map_guess_close)
+        if (score < 500) resultsTitle.text = getString(R.string.map_guess_goodJob)
+        else resultsTitle.text = getString(R.string.map_guess_betterLuckNextTime)
+
+        distanceText.text = getString(R.string.map_distanceFrom, distance)
+        pointsEarned.text = getString(R.string.map_pointsEarned, score)
+
+        moveMapOverLine()
+        //Toast.makeText(activity as MainActivity, "Latitude: ${selectedPoint.latitude()}\nLongitude: ${selectedPoint.longitude()}\nDistance: ${(distance * 100.0).roundToInt() / 100.0}km", Toast.LENGTH_SHORT).show()
     }
 
     private fun getDistance(originalPoint: Point, guessedPoint: Point): Double {
@@ -102,6 +137,11 @@ class MapFragment : Fragment() {
         dist = rad2deg(dist)
         dist = dist * 60 * 1.853159616
         return dist
+    }
+
+    private fun calculateScore(distance: Double): Int {
+        //Calculate actual score here
+        return (distance * 2).roundToInt()
     }
 
     //This function converts decimal degrees to radians
@@ -159,5 +199,28 @@ class MapFragment : Fragment() {
         // Add the resulting circle to the map.
         circleAnnotationManager.create(circleAnnotationOptions)
 
+    }
+
+    private fun moveMapOverLine() {
+        val displayMetrics = DisplayMetrics()
+        (activity as MainActivity).windowManager.defaultDisplay.getMetrics(displayMetrics)
+
+        val height = displayMetrics.heightPixels
+
+
+        // Create a polygon
+        val triangleCoordinates = listOf(
+            listOf(
+                selectedPoint,
+                imagePoint
+            )
+        )
+        val polygon = Polygon.fromLngLats(triangleCoordinates)
+// Convert to a camera options from a given geometry and padding
+
+        val cameraPosition = mapboxMap.cameraForGeometry(polygon, EdgeInsets(100.0, 100.0, (height/2.3).toDouble(), 100.0))
+
+// Set camera position
+        mapboxMap.setCamera(cameraPosition)
     }
 }
