@@ -33,7 +33,7 @@ class NearbyConnectionManager @Inject constructor(appContext: Context) {
     */
     var myCodeName: String = CodenameGenerator.generate()
 
-    private val packagename: String = "guessit.canterbury.ac.nz"
+    private val packageName: String = appContext.packageName
 
     var opponentName: String? = null
 
@@ -55,7 +55,7 @@ class NearbyConnectionManager @Inject constructor(appContext: Context) {
         // Note: Advertising may fail. To keep this demo simple, we don't handle failures.
         connectionsClient.startAdvertising(
             myCodeName,
-            packagename, // Just use package name
+            packageName, // Just use package name
             connectionLifecycleCallback,
             options
         )
@@ -73,7 +73,7 @@ class NearbyConnectionManager @Inject constructor(appContext: Context) {
 
     fun startDiscovery(){
         val options = DiscoveryOptions.Builder().setStrategy(STRATEGY).build()
-        connectionsClient.startDiscovery(packagename, endpointDiscoveryCallback, options)
+        connectionsClient.startDiscovery(packageName, endpointDiscoveryCallback, options)
     }
 
     // Callbacks for connections to other devices
@@ -102,11 +102,13 @@ class NearbyConnectionManager @Inject constructor(appContext: Context) {
         }
     }
 
+    // Will be called when a payload is received. Can be substituted as needed by the current fragment
     var handlePayload: ((string: String) -> Unit)? = null
 
+    // Will be called when a connection result succeeds. Can be substituted as needed by the current fragment
     var handleConnectionResult: (() -> Unit)? = null
 
-    /** callback for receiving payloads */
+    // Callback for receiving payloads
     private val payloadCallback: PayloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
             payload.asBytes()?.let {
