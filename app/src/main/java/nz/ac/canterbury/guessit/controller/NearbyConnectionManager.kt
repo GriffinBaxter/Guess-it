@@ -102,7 +102,7 @@ class NearbyConnectionManager @Inject constructor(appContext: Context) {
         }
     }
 
-    var handlePayload: (() -> Unit)? = null
+    var handlePayload: ((string: String) -> Unit)? = null
 
     var handleConnectionResult: (() -> Unit)? = null
 
@@ -112,7 +112,7 @@ class NearbyConnectionManager @Inject constructor(appContext: Context) {
             payload.asBytes()?.let {
                 val value = String(it, Charsets.UTF_8)
                 Log.e("PAYLOADRECEIVED", "VALUE: ${value}")
-                handlePayload?.invoke()
+                handlePayload?.invoke(value)
             }
         }
 

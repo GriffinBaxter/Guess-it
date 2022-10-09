@@ -115,8 +115,9 @@ class SearchFragment : Fragment() {
         }
     }
 
-    private val handlePayload: () -> Unit = {
+    private val handlePayload: (string: String) -> Unit = {
         Log.e("TEST", "TESTFUNCTION_SEARCHFRAGMENT")
+        Log.e("PAYLOADHANDLE", "PAYLOAD: ${it}")
     }
 
     private val handleConnectionResult: () -> Unit = {
