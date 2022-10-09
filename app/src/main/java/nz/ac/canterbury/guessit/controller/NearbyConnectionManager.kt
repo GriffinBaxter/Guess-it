@@ -4,18 +4,22 @@ import android.content.Context
 import android.util.Log
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.*
-import nz.ac.canterbury.guessit.ui.nearby.NearbyFragment
+//import nz.ac.canterbury.guessit.ui.nearby.NearbyFragment
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-abstract class NearbyConnectionManager @Inject constructor(appContext: Context) {
+class NearbyConnectionManager @Inject constructor(appContext: Context) {
 
     /**
      * Our handle to the [Nearby Connections API][ConnectionsClient].
      */
-    lateinit var connectionsClient: ConnectionsClient
+    var connectionsClient: ConnectionsClient
+
+    init {
+        connectionsClient = Nearby.getConnectionsClient(appContext)
+    }
 
     /**
      * Strategy for telling the Nearby Connections API how we want to discover and connect to
@@ -27,15 +31,23 @@ abstract class NearbyConnectionManager @Inject constructor(appContext: Context) 
     /*
     The following variables are for tracking our own data
     */
-    private var myCodeName: String = NearbyFragment.CodenameGenerator.generate()
+    var myCodeName: String = CodenameGenerator.generate()
 
     private val packagename: String = "guessit.canterbury.ac.nz"
 
-    private var opponentName: String? = null
+    var opponentName: String? = null
+
     private var opponentEndpointId: String? = null
 
-    init {
-        connectionsClient = Nearby.getConnectionsClient(appContext)
+    fun sendPayload(payloadString: String) {
+        connectionsClient.sendPayload(
+            opponentEndpointId!!,
+            Payload.fromBytes(payloadString.toByteArray(Charsets.UTF_8))
+        )
+    }
+
+    fun disconnectFromEndpoint() {
+        opponentEndpointId?.let { connectionsClient.disconnectFromEndpoint(it) }
     }
 
     fun startAdvertising() {
@@ -81,9 +93,7 @@ abstract class NearbyConnectionManager @Inject constructor(appContext: Context) 
                 connectionsClient.stopAdvertising()
                 connectionsClient.stopDiscovery()
                 opponentEndpointId = endpointId
-//                binding.opponentName.text = opponentName
-//                binding.status.text = "Connected"
-//                setGameControllerEnabled(true) // we can start playing
+                handleConnectionResult?.invoke()
             }
         }
 
@@ -92,21 +102,17 @@ abstract class NearbyConnectionManager @Inject constructor(appContext: Context) 
         }
     }
 
-//    fun disconnectFromEndpoint(endpoint: String) {
-//        connectionsClient.disconnectFromEndpoint(endpoint)
-//    }
+    var handlePayload: (() -> Unit)? = null
 
-    var handleImagesSelected: (() -> Unit)? = null
+    var handleConnectionResult: (() -> Unit)? = null
 
     /** callback for receiving payloads */
     private val payloadCallback: PayloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
             payload.asBytes()?.let {
-//                opponentChoice = NearbyFragment.GameChoice.valueOf(String(it, Charsets.UTF_8))
                 val value = String(it, Charsets.UTF_8)
-                if (value == "images_selected") {
-                    handleImagesSelected?.invoke()
-                }
+                Log.e("PAYLOADRECEIVED", "VALUE: ${value}")
+                handlePayload?.invoke()
             }
         }
 
@@ -115,26 +121,6 @@ abstract class NearbyConnectionManager @Inject constructor(appContext: Context) 
             // Feel free to refactor and extract this code into a different method
             if (update.status == PayloadTransferUpdate.Status.SUCCESS) {
                 Log.e("PAYLOAD", "PAYLOADTRANSFERSUCCESS")
-//                && myChoice != null && opponentChoice != null) {
-//                val mc = myChoice!!
-//                val oc = opponentChoice!!
-//                when {
-//                    mc.beats(oc) -> { // Win!
-//                        binding.status.text = "${mc.name} beats ${oc.name}"
-//                        myScore++
-//                    }
-//                    mc == oc -> { // Tie
-//                        binding.status.text = "You both chose ${mc.name}"
-//                    }
-//                    else -> { // Loss
-//                        binding.status.text = "${mc.name} loses to ${oc.name}"
-//                        opponentScore++
-//                    }
-//                }
-//                binding.score.text = "$myScore : $opponentScore"
-//                myChoice = null
-//                opponentChoice = null
-//                setGameControllerEnabled(true)
             }
         }
     }
