@@ -13,7 +13,7 @@
     <string name="guess_button_on_map">Guess</string>
     <string name="searching_for_host">Searching For Host…</string>
     <string name="searching_for_player">Searching For Player…</string>
-    <string name="waiting_for_photo_to_be_chosen">Waiting for Host to Choose Photo...</string>
+    <string name="waiting_for_photo_to_be_chosen">Waiting for Host to Choose Photo…</string>
     <string name="map_continue">Continue</string>
     <string name="map_share">Share</string>
     <string name="map_guess_close">Close Guess!</string>
