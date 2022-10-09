@@ -33,7 +33,7 @@ class NearbyConnectionManager @Inject constructor(appContext: Context) {
     */
     var myCodeName: String = CodenameGenerator.generate()
 
-    private val packageName: String = appContext.packageName
+    private val packageName: String = "guessit.canterbury.ac.nz"
 
     var opponentName: String? = null
 
