@@ -1,9 +1,9 @@
 package nz.ac.canterbury.guessit.ui.map
 
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.DisplayMetrics
-import android.view.Display
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,6 +24,7 @@ import com.mapbox.maps.plugin.scalebar.scalebar
 import nz.ac.canterbury.guessit.MainActivity
 import nz.ac.canterbury.guessit.R
 import nz.ac.canterbury.guessit.controller.ImageLabeler
+import kotlin.math.pow
 import kotlin.math.roundToInt
 
 
@@ -42,6 +43,7 @@ class MapFragment : Fragment() {
     lateinit var distanceText: TextView
     lateinit var pointsEarned: TextView
     lateinit var continueButton: Button
+    lateinit var shareButton: Button
 
     lateinit var imageLabeler: ImageLabeler
 
@@ -49,6 +51,8 @@ class MapFragment : Fragment() {
 
     lateinit var circleAnnotationManager: CircleAnnotationManager
     lateinit var polylineAnnotationManager: PolylineAnnotationManager
+
+    var score: Int? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -67,6 +71,7 @@ class MapFragment : Fragment() {
         distanceText = view.findViewById(R.id.distanceText)
         pointsEarned = view.findViewById(R.id.pointsEarnedText)
         continueButton = view.findViewById(R.id.map_continueButton)
+        shareButton = view.findViewById(R.id.map_shareButton)
 
 
         photoDescriptionTextView = view.findViewById(R.id.photoFeatures)
@@ -104,6 +109,10 @@ class MapFragment : Fragment() {
             //Do something here
         }
 
+        shareButton.setOnClickListener {
+            shareScore(score!!)
+        }
+
         return view
     }
 
@@ -111,13 +120,13 @@ class MapFragment : Fragment() {
         val distance = getDistance(imagePoint, selectedPoint)
         addLine()
 
-        val score = calculateScore(distance)
+        score = calculateScore(distance)
 
         map_guessButton.visibility = View.INVISIBLE
         resultsLayout.visibility = View.VISIBLE
 
-        if (score < 100) resultsTitle.text = getString(R.string.map_guess_close)
-        if (score < 500) resultsTitle.text = getString(R.string.map_guess_goodJob)
+        if (score!! < 100) resultsTitle.text = getString(R.string.map_guess_close)
+        if (score!! < 500) resultsTitle.text = getString(R.string.map_guess_goodJob)
         else resultsTitle.text = getString(R.string.map_guess_betterLuckNextTime)
 
         distanceText.text = getString(R.string.map_distanceFrom, distance)
@@ -141,11 +150,6 @@ class MapFragment : Fragment() {
         return dist
     }
 
-    private fun calculateScore(distance: Double): Int {
-        //Calculate actual score here
-        return (distance * 2).roundToInt()
-    }
-
     //This function converts decimal degrees to radians
     private fun deg2rad(deg: Double): Double {
         return deg * Math.PI / 180.0
@@ -154,6 +158,22 @@ class MapFragment : Fragment() {
     //This function converts radians to decimal degrees
     private fun rad2deg(rad: Double): Double {
         return rad * 180.0 / Math.PI
+    }
+
+    private fun calculateScore(distance: Double): Int {
+        val score = 4999.91 * (0.998036).pow(distance)
+        return score.roundToInt()
+    }
+
+    private fun shareScore(score: Int) {
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, "I just got a score of $score on GuessIt!")
+            type = "text/plain"
+        }
+
+        val shareIntent = Intent.createChooser(sendIntent, null)
+        startActivity(shareIntent)
     }
 
 
