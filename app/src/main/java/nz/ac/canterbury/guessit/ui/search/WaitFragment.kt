@@ -8,9 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.core.os.bundleOf
+import androidx.navigation.Navigation
 import dagger.hilt.android.AndroidEntryPoint
 import nz.ac.canterbury.guessit.R
 import nz.ac.canterbury.guessit.controller.NearbyConnectionManager
+import org.json.JSONObject
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -42,10 +45,22 @@ class WaitFragment : Fragment() {
 
     }
 
-    private val handlePayload: (string: String) -> Unit = {
+    private val handlePayload: (string: String) -> Unit = { payload ->
         Log.e("TEST", "TESTFUNCTION_SEARCHFRAGMENT")
-        Log.e("PAYLOADHANDLE", "PAYLOAD: ${it}")
-        payloadDisplayText.text = "Received: $it"
+        Log.e("PAYLOADHANDLE", "PAYLOAD: ${payload}")
+        payloadDisplayText.text = "Received: $payload"
+        val jsonPayload = JSONObject(payload)
+        if (jsonPayload.has("latitude") && jsonPayload.has("longitude") && jsonPayload.has("photoDescription")) {
+            val latitude = jsonPayload.get("latitude").toString()
+            val longitude = jsonPayload.get("longitude").toString()
+            val photoDescription = jsonPayload.get("photoDescription").toString()
+            val args = bundleOf(
+                "latitude" to latitude, "longitude" to longitude, "photoDescription" to photoDescription
+            )
+            Navigation.findNavController(requireView()).navigate(R.id.action_waitFragment_to_mapFragment, args)
+        } else {
+            Log.e("Invalid Payload", "Invalid Payload Received in WaitFragment")
+        }
     }
 
 }

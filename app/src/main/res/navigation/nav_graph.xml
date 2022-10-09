@@ -61,7 +61,11 @@
         android:id="@+id/waitFragment"
         android:name="nz.ac.canterbury.guessit.ui.search.WaitFragment"
         android:label="fragment_wait"
-        tools:layout="@layout/fragment_wait" />
+        tools:layout="@layout/fragment_wait" >
+        <action
+            android:id="@+id/action_waitFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
+    </fragment>
     <fragment
         android:id="@+id/searchFragment"
         android:name="nz.ac.canterbury.guessit.ui.search.SearchFragment"

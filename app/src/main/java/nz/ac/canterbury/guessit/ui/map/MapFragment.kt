@@ -3,7 +3,6 @@ package nz.ac.canterbury.guessit.ui.map
 
 import android.os.Bundle
 import android.util.DisplayMetrics
-import android.view.Display
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,7 +22,6 @@ import com.mapbox.maps.plugin.gestures.addOnMapClickListener
 import com.mapbox.maps.plugin.scalebar.scalebar
 import nz.ac.canterbury.guessit.MainActivity
 import nz.ac.canterbury.guessit.R
-import nz.ac.canterbury.guessit.controller.ImageLabeler
 import kotlin.math.roundToInt
 
 
@@ -43,8 +41,6 @@ class MapFragment : Fragment() {
     lateinit var pointsEarned: TextView
     lateinit var continueButton: Button
 
-    lateinit var imageLabeler: ImageLabeler
-
     var imagePoint = Point.fromLngLat(172.604180, -43.303350)
 
     lateinit var circleAnnotationManager: CircleAnnotationManager
@@ -54,11 +50,16 @@ class MapFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         // Inflate the layout for this fragment
-        val view: View = inflater.inflate(R.layout.fragment_map, container, false)
+        return inflater.inflate(R.layout.fragment_map, container, false)
+    }
 
-        imageLabeler = ImageLabeler(activity as MainActivity)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val newLat = arguments?.getString("latitude")!!
+        val newLong = arguments?.getString("longitude")!!
+        imagePoint = Point.fromLngLat(newLong.toDouble(), newLat.toDouble())
 
         resultsLayout = view.findViewById(R.id.map_resultsLayout)
         resultsLayout.visibility = View.INVISIBLE
@@ -103,8 +104,6 @@ class MapFragment : Fragment() {
         continueButton.setOnClickListener {
             //Do something here
         }
-
-        return view
     }
 
     private fun manageGuess() {
