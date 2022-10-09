@@ -44,10 +44,6 @@ class ShowPhotoFragment : Fragment(), PhotoAdapter.OnPhotoListener {
 
     private lateinit var photosList: RecyclerView
 
-//    private val viewModel: PhotoViewModel by activityViewModels() {
-//        PhotoViewModelFactory((requireActivity().application as SENGApplication).repository)
-//    }
-
     private val photoViewModel: PhotoViewModel by viewModels()
 
     private val photoDirectory
@@ -75,7 +71,7 @@ class ShowPhotoFragment : Fragment(), PhotoAdapter.OnPhotoListener {
 
         photosList = view.findViewById(R.id.photosList)
 
-        val preferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+        val preferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
         val galleryWidth = preferences.getString("galleryWidth", "3")?.toInt() ?: 3
         photosList.layoutManager = GridLayoutManager(requireContext(), galleryWidth)
 

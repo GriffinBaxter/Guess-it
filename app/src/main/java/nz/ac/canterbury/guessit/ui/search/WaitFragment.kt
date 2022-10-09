@@ -6,8 +6,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.navigation.Navigation
 import dagger.hilt.android.AndroidEntryPoint
@@ -21,7 +19,6 @@ class WaitFragment : Fragment() {
 
     @Inject
     lateinit var nearbyConnectionManager: NearbyConnectionManager
-    lateinit var payloadDisplayText: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,22 +30,9 @@ class WaitFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         nearbyConnectionManager.handlePayload = handlePayload
-
-        val sendPayloadButton: Button = view.findViewById(R.id.sendPayloadButton)
-        sendPayloadButton.setOnClickListener {
-            Log.e("SENDINGPAYLOAD", "SENDING...")
-            nearbyConnectionManager.sendPayload("WAITPAYLOAD")
-        }
-
-        payloadDisplayText = view.findViewById(R.id.receivedPayload)
-
-
     }
 
     private val handlePayload: (string: String) -> Unit = { payload ->
-        Log.e("TEST", "TESTFUNCTION_SEARCHFRAGMENT")
-        Log.e("PAYLOADHANDLE", "PAYLOAD: ${payload}")
-        payloadDisplayText.text = "Received: $payload"
         val jsonPayload = JSONObject(payload)
         if (jsonPayload.has("latitude") && jsonPayload.has("longitude") && jsonPayload.has("photoDescription")) {
             val latitude = jsonPayload.get("latitude").toString()
