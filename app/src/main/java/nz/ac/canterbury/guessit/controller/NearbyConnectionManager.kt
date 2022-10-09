@@ -10,7 +10,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class NearbyConnectionManager @Inject constructor(appContext: Context) {
+abstract class NearbyConnectionManager @Inject constructor(appContext: Context) {
 
     /**
      * Our handle to the [Nearby Connections API][ConnectionsClient].
@@ -96,11 +96,17 @@ class NearbyConnectionManager @Inject constructor(appContext: Context) {
 //        connectionsClient.disconnectFromEndpoint(endpoint)
 //    }
 
+    var handleImagesSelected: (() -> Unit)? = null
+
     /** callback for receiving payloads */
     private val payloadCallback: PayloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
             payload.asBytes()?.let {
 //                opponentChoice = NearbyFragment.GameChoice.valueOf(String(it, Charsets.UTF_8))
+                val value = String(it, Charsets.UTF_8)
+                if (value == "images_selected") {
+                    handleImagesSelected?.invoke()
+                }
             }
         }
 
