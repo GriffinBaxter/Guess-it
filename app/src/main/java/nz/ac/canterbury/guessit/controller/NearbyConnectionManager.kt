@@ -10,7 +10,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class NearbyConnectionManager @Inject constructor(appContext: Context) {
+abstract class NearbyConnectionManager @Inject constructor(appContext: Context) {
 
     /**
      * Our handle to the [Nearby Connections API][ConnectionsClient].
