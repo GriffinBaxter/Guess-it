@@ -83,12 +83,14 @@ class MapFragment : Fragment() {
         polylineAnnotationManager = annotationApi.createPolylineAnnotationManager()
 
         mapboxMap.addOnMapClickListener { point ->
-            selectedPoint = point
+            //Make it so you cant click the map if you arent guessing anymore
+            if (resultsLayout.visibility == View.INVISIBLE) {
+                selectedPoint = point
 
-            addPoint()
+                addPoint()
 
-            map_guessButton.isEnabled = true
-
+                map_guessButton.isEnabled = true
+            }
             true
         }
 
@@ -218,7 +220,7 @@ class MapFragment : Fragment() {
         val polygon = Polygon.fromLngLats(triangleCoordinates)
 // Convert to a camera options from a given geometry and padding
 
-        val cameraPosition = mapboxMap.cameraForGeometry(polygon, EdgeInsets(100.0, 100.0, (height/2.3).toDouble(), 100.0))
+        val cameraPosition = mapboxMap.cameraForGeometry(polygon, EdgeInsets(100.0, 100.0, (height/2.3), 100.0))
 
 // Set camera position
         mapboxMap.setCamera(cameraPosition)
