@@ -36,7 +36,10 @@ class HomeFragment : Fragment() {
         }
         val devShowMapButton: Button = view.findViewById(R.id.dev_showMap)
         devShowMapButton.setOnClickListener {
-            Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_mapFragment)
+            val args = bundleOf(
+                "latitude" to "-43.303350", "longitude" to "172.604180", "photoDescription" to "Some cool Photo!"
+            )
+            Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_mapFragment, args)
         }
 
 //        val showBluetoothButton: Button = view.findViewById(R.id.showBluetoothButton)

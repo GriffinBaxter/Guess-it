@@ -47,7 +47,7 @@ class MapFragment : Fragment() {
 
     lateinit var imageLabeler: ImageLabeler
 
-    var imagePoint = Point.fromLngLat(172.604180, -43.303350)
+    lateinit var imagePoint: Point
 
     lateinit var circleAnnotationManager: CircleAnnotationManager
     lateinit var polylineAnnotationManager: PolylineAnnotationManager
@@ -64,9 +64,11 @@ class MapFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
+        photoDescriptionTextView = view.findViewById(R.id.photoFeatures)
+
         val newLat = arguments?.getString("latitude")!!
         val newLong = arguments?.getString("longitude")!!
+        photoDescriptionTextView.text = arguments?.getString("photoDescription")!!
         imagePoint = Point.fromLngLat(newLong.toDouble(), newLat.toDouble())
 
         imageLabeler = ImageLabeler(activity as MainActivity)
@@ -81,13 +83,11 @@ class MapFragment : Fragment() {
         shareButton = view.findViewById(R.id.map_shareButton)
 
 
-        photoDescriptionTextView = view.findViewById(R.id.photoFeatures)
         mapView = view.findViewById(R.id.mapView)
         mapboxMap = mapView.getMapboxMap()
         mapView.getMapboxMap().loadStyleUri(Style.MAPBOX_STREETS)
         mapView.scalebar.isMetricUnits = true
 
-        photoDescriptionTextView.text = "This is a cool photo!"
 
         // Create an instance of the Annotation API and get the CircleAnnotationManager.
         val annotationApi = mapView.annotations
