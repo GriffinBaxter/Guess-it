@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
@@ -23,9 +24,9 @@ import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
@@ -73,7 +74,11 @@ class ShowPhotoFragment : Fragment(), PhotoAdapter.OnPhotoListener {
         }
 
         photosList = view.findViewById(R.id.photosList)
-        photosList.layoutManager = GridLayoutManager(requireContext(), 3)
+
+        val preferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+        val galleryWidth = preferences.getString("galleryWidth", "3")?.toInt() ?: 3
+        photosList.layoutManager = GridLayoutManager(requireContext(), galleryWidth)
+
         photosList.adapter = photoAdapter
 
         val takePhotoButton: Button = view.findViewById(R.id.takePhotoButton)

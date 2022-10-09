@@ -139,6 +139,21 @@
                     mapbox:layout_constraintHorizontal_bias="0.498"
                     mapbox:layout_constraintStart_toStartOf="parent"
                     mapbox:layout_constraintTop_toTopOf="parent" />
+
+                <Button
+                    android:id="@+id/map_shareButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="20dp"
+                    android:paddingTop="10dp"
+                    android:paddingRight="20dp"
+                    android:paddingBottom="10dp"
+                    android:text="@string/map_share"
+                    android:textSize="24sp"
+                    mapbox:layout_constraintBottom_toBottomOf="parent"
+                    mapbox:layout_constraintEnd_toEndOf="parent"
+                    mapbox:layout_constraintStart_toEndOf="@+id/map_continueButton"
+                    mapbox:layout_constraintTop_toTopOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>

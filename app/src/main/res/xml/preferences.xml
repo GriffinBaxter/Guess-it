@@ -9,5 +9,7 @@
         android:key="galleryWidth"
         android:summary="Number of photos to display in each row"
         android:title="Gallery Width"
-        android:entries="@array/galleryOptions" />
+        android:entries="@array/galleryOptions"
+        android:entryValues="@array/galleryOptions"
+        android:defaultValue="3"/>
 </PreferenceScreen>

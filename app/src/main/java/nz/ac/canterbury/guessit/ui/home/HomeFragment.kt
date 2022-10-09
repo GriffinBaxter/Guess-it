@@ -34,6 +34,10 @@ class HomeFragment : Fragment() {
             )
             Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_searchFragment, args)
         }
+        val devShowMapButton: Button = view.findViewById(R.id.dev_showMap)
+        devShowMapButton.setOnClickListener {
+            Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_mapFragment)
+        }
 
 //        val showBluetoothButton: Button = view.findViewById(R.id.showBluetoothButton)
 //        showBluetoothButton.setOnClickListener {
