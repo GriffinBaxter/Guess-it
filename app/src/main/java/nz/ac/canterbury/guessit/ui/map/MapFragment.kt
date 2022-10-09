@@ -3,8 +3,10 @@ package nz.ac.canterbury.guessit.ui.map
 
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,12 +14,10 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.mapbox.geojson.Point
 import com.mapbox.geojson.Polygon
-import com.mapbox.maps.EdgeInsets
-import com.mapbox.maps.MapView
-import com.mapbox.maps.MapboxMap
-import com.mapbox.maps.Style
+import com.mapbox.maps.*
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.*
 import com.mapbox.maps.plugin.gestures.addOnMapClickListener
@@ -65,6 +65,14 @@ class MapFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         photoDescriptionTextView = view.findViewById(R.id.photoFeatures)
+        resultsTitle = view.findViewById(R.id.resultsTitle)
+        distanceText = view.findViewById(R.id.distanceText)
+        pointsEarned = view.findViewById(R.id.pointsEarnedText)
+        continueButton = view.findViewById(R.id.map_continueButton)
+        shareButton = view.findViewById(R.id.map_shareButton)
+        map_guessButton = view.findViewById(R.id.map_guessButton)
+        resultsLayout = view.findViewById(R.id.map_resultsLayout)
+        mapView = view.findViewById(R.id.mapView)
 
         val newLat = arguments?.getString("latitude")!!
         val newLong = arguments?.getString("longitude")!!
@@ -72,18 +80,18 @@ class MapFragment : Fragment() {
         imagePoint = Point.fromLngLat(newLong.toDouble(), newLat.toDouble())
 
 
-        resultsLayout = view.findViewById(R.id.map_resultsLayout)
+
         resultsLayout.visibility = View.INVISIBLE
 
-        resultsTitle = view.findViewById(R.id.resultsTitle)
-        distanceText = view.findViewById(R.id.distanceText)
-        pointsEarned = view.findViewById(R.id.pointsEarnedText)
-        continueButton = view.findViewById(R.id.map_continueButton)
-        shareButton = view.findViewById(R.id.map_shareButton)
 
 
-        mapView = view.findViewById(R.id.mapView)
         mapboxMap = mapView.getMapboxMap()
+
+        // Create an instance of the Annotation API and get the CircleAnnotationManager.
+        val annotationApi = mapView.annotations
+        circleAnnotationManager = annotationApi.createCircleAnnotationManager()
+        polylineAnnotationManager = annotationApi.createPolylineAnnotationManager()
+
 
         val preferences: SharedPreferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(requireContext())
         val darkMode = preferences.getBoolean("darkMode", false)
@@ -94,12 +102,6 @@ class MapFragment : Fragment() {
 
         mapView.getMapboxMap().loadStyleUri(style)
         mapView.scalebar.isMetricUnits = true
-
-
-        // Create an instance of the Annotation API and get the CircleAnnotationManager.
-        val annotationApi = mapView.annotations
-        circleAnnotationManager = annotationApi.createCircleAnnotationManager()
-        polylineAnnotationManager = annotationApi.createPolylineAnnotationManager()
 
         mapboxMap.addOnMapClickListener { point ->
             //Make it so you cant click the map if you arent guessing anymore
@@ -113,11 +115,9 @@ class MapFragment : Fragment() {
             true
         }
 
-        map_guessButton = view.findViewById(R.id.map_guessButton)
         map_guessButton.setOnClickListener {
             manageGuess()
         }
-        map_guessButton.isEnabled = false
 
         continueButton.setOnClickListener {
             //Do something here
@@ -126,6 +126,47 @@ class MapFragment : Fragment() {
         shareButton.setOnClickListener {
             shareScore(score!!)
         }
+
+        setMapState()
+    }
+
+    fun setMapState() {
+        val model: MapState by viewModels()
+
+        val cameraOptions = CameraOptions.Builder()
+            .center(model.centerPoint)
+            .zoom(model.zoom)
+            .bearing(model.bearing)
+            .pitch(model.pitch)
+            .build()
+
+        mapboxMap.setCamera(cameraOptions)
+
+        map_guessButton.isEnabled = false
+        if (model.selectedPointInitialized()) {
+            selectedPoint = model.selectedPoint
+            addPoint()
+            map_guessButton.isEnabled = true
+        }
+
+        //On the guessing screen
+        if (model.score != null) {
+            manageGuess()
+        }
+    }
+
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        val model: MapState by viewModels()
+        model.centerPoint = mapboxMap.cameraState.center
+        model.zoom = mapboxMap.cameraState.zoom
+        model.bearing = mapboxMap.cameraState.bearing
+        model.pitch = mapboxMap.cameraState.pitch
+        if (this::selectedPoint.isInitialized) model.selectedPoint = selectedPoint
+        model.score = score
+
+
     }
 
     private fun manageGuess() {
@@ -215,8 +256,14 @@ class MapFragment : Fragment() {
             // Style the line that will be added to the map.
             .withLineColor("#008080")
             .withLineWidth(5.0)
+
         //Make the line dashed
+
+
         polylineAnnotationManager.lineDasharray = listOf(2.0, 0.5)
+
+
+        Log.d("Dashed", polylineAnnotationManager.lineDasharray.toString())
 
         // Add the resulting line to the map.
         polylineAnnotationManager.create(polylineAnnotationOptions)
@@ -241,6 +288,7 @@ class MapFragment : Fragment() {
         (activity as MainActivity).windowManager.defaultDisplay.getMetrics(displayMetrics)
 
         val height = displayMetrics.heightPixels
+        val width = displayMetrics.widthPixels
 
 
         // Create a polygon
@@ -253,9 +301,22 @@ class MapFragment : Fragment() {
         val polygon = Polygon.fromLngLats(triangleCoordinates)
 // Convert to a camera options from a given geometry and padding
 
-        val cameraPosition = mapboxMap.cameraForGeometry(polygon, EdgeInsets(100.0, 100.0, (height/2.3), 100.0))
+        val cameraPosition: CameraOptions
+
+        if (inLandscape()) {
+            cameraPosition = mapboxMap.cameraForGeometry(polygon, EdgeInsets(100.0, 100.0, 100.0, (width/2.0)))
+        } else {
+            cameraPosition = mapboxMap.cameraForGeometry(polygon, EdgeInsets(100.0, 100.0, (height/2.3), 100.0))
+        }
+
+
 
 // Set camera position
         mapboxMap.setCamera(cameraPosition)
+    }
+
+    private fun inLandscape(): Boolean {
+        val orientation = resources.configuration.orientation
+        return orientation == Configuration.ORIENTATION_LANDSCAPE
     }
 }
