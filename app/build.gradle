@@ -90,6 +90,9 @@ dependencies {
 
     // Nearby
     implementation 'com.google.android.gms:play-services-nearby:18.3.0'
+
+    // Kotlin Extensions for Play Services
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.4'
 }
 
 // Allow references to generated code

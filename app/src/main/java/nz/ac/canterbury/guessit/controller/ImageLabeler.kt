@@ -2,17 +2,21 @@ package nz.ac.canterbury.guessit.controller
 
 import android.app.Activity
 import android.graphics.Bitmap
+import android.util.Log
 import android.widget.Toast
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.label.ImageLabel
 import com.google.mlkit.vision.label.ImageLabeling
 import com.google.mlkit.vision.label.defaults.ImageLabelerOptions
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.tasks.await
 import nz.ac.canterbury.guessit.MainActivity
+import okhttp3.internal.wait
 import java.io.IOException
 
 class ImageLabeler(var activity: Activity) {
 
-    fun setPhotoDescription(bitmap: Bitmap): String {
+    suspend fun setPhotoDescription(bitmap: Bitmap): String {
         //Load Image
         val image: InputImage
         try {
@@ -28,10 +32,12 @@ class ImageLabeler(var activity: Activity) {
         val labeler = ImageLabeling.getClient(options)
 
         var str = "EMPTY"
-        labeler.process(image)
-            .addOnSuccessListener { labels ->
-                str = getLabels(labels)
-            }
+        try {
+            val result = labeler.process(image).await()
+            str = getLabels(result)
+        } catch (e: Exception) {
+            Log.e("ImageLabeler", e.toString())
+        }
 
         return str
     }

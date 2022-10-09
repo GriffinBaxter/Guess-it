@@ -2,17 +2,28 @@ package nz.ac.canterbury.guessit.ui.singlePhoto
 
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.lifecycle.lifecycleScope
 import com.squareup.picasso.Picasso
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import nz.ac.canterbury.guessit.controller.ImageLabeler
 import nz.ac.canterbury.guessit.MainActivity
 import nz.ac.canterbury.guessit.R
+import nz.ac.canterbury.guessit.controller.NearbyConnectionManager
+import org.json.JSONObject
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class SinglePhotoFragment : Fragment() {
+
+    @Inject
+    lateinit var nearbyConnectionManager: NearbyConnectionManager
 
     lateinit var imageLabeler: ImageLabeler
 
@@ -20,7 +31,11 @@ class SinglePhotoFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_single_photo, container, false)
+        return inflater.inflate(R.layout.fragment_single_photo, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         imageLabeler = ImageLabeler(activity as MainActivity)
 
@@ -31,8 +46,15 @@ class SinglePhotoFragment : Fragment() {
         val latitude = arguments?.getString("latitude")!!.toDouble()
         val longitude = arguments?.getString("longitude")!!.toDouble()
 
-        val photoDescription = imageLabeler.setPhotoDescription(BitmapFactory.decodeFile(photoPath))
-
-        return view
+        lifecycleScope.launch {
+            val photoDescription = imageLabeler.setPhotoDescription(BitmapFactory.decodeFile(photoPath))
+            Log.e("PHOTODESC", "Here: ${photoDescription}")
+            val payload = JSONObject()
+            payload.put("latitude", latitude)
+            payload.put("longitude", longitude)
+            payload.put("photoDescription", photoDescription)
+            val payloadString = payload.toString()
+            nearbyConnectionManager.sendPayload(payloadString)
+        }
     }
 }

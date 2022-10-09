@@ -18,26 +18,34 @@ class WaitFragment : Fragment() {
 
     @Inject
     lateinit var nearbyConnectionManager: NearbyConnectionManager
+    lateinit var payloadDisplayText: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_wait, container, false)
-
-        // TODO: navigate to map when photo chosen
-
-        return view
+        return inflater.inflate(R.layout.fragment_wait, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        nearbyConnectionManager.handlePayload = handlePayload
 
         val sendPayloadButton: Button = view.findViewById(R.id.sendPayloadButton)
         sendPayloadButton.setOnClickListener {
             Log.e("SENDINGPAYLOAD", "SENDING...")
             nearbyConnectionManager.sendPayload("WAITPAYLOAD")
         }
+
+        payloadDisplayText = view.findViewById(R.id.receivedPayload)
+
+
+    }
+
+    private val handlePayload: (string: String) -> Unit = {
+        Log.e("TEST", "TESTFUNCTION_SEARCHFRAGMENT")
+        Log.e("PAYLOADHANDLE", "PAYLOAD: ${it}")
+        payloadDisplayText.text = "Received: $it"
     }
 
 }
