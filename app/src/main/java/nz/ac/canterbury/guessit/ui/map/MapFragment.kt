@@ -2,6 +2,7 @@ package nz.ac.canterbury.guessit.ui.map
 
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.LayoutInflater
@@ -23,7 +24,6 @@ import com.mapbox.maps.plugin.gestures.addOnMapClickListener
 import com.mapbox.maps.plugin.scalebar.scalebar
 import nz.ac.canterbury.guessit.MainActivity
 import nz.ac.canterbury.guessit.R
-import nz.ac.canterbury.guessit.controller.ImageLabeler
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -45,7 +45,6 @@ class MapFragment : Fragment() {
     lateinit var continueButton: Button
     lateinit var shareButton: Button
 
-    lateinit var imageLabeler: ImageLabeler
 
     lateinit var imagePoint: Point
 
@@ -64,6 +63,7 @@ class MapFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         photoDescriptionTextView = view.findViewById(R.id.photoFeatures)
 
         val newLat = arguments?.getString("latitude")!!
@@ -71,7 +71,6 @@ class MapFragment : Fragment() {
         photoDescriptionTextView.text = arguments?.getString("photoDescription")!!
         imagePoint = Point.fromLngLat(newLong.toDouble(), newLat.toDouble())
 
-        imageLabeler = ImageLabeler(activity as MainActivity)
 
         resultsLayout = view.findViewById(R.id.map_resultsLayout)
         resultsLayout.visibility = View.INVISIBLE
@@ -85,7 +84,15 @@ class MapFragment : Fragment() {
 
         mapView = view.findViewById(R.id.mapView)
         mapboxMap = mapView.getMapboxMap()
-        mapView.getMapboxMap().loadStyleUri(Style.MAPBOX_STREETS)
+
+        val preferences: SharedPreferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(requireContext())
+        val darkMode = preferences.getBoolean("darkMode", false)
+        var style = Style.MAPBOX_STREETS
+        if (darkMode) {
+            style = Style.DARK
+        }
+
+        mapView.getMapboxMap().loadStyleUri(style)
         mapView.scalebar.isMetricUnits = true
 
 
@@ -130,15 +137,15 @@ class MapFragment : Fragment() {
         map_guessButton.visibility = View.INVISIBLE
         resultsLayout.visibility = View.VISIBLE
 
-        if (score!! < 100) resultsTitle.text = getString(R.string.map_guess_close)
-        if (score!! < 500) resultsTitle.text = getString(R.string.map_guess_goodJob)
+        if (score!! > 4500) resultsTitle.text = getString(R.string.map_guess_close)
+        else if (score!! > 2000) resultsTitle.text = getString(R.string.map_guess_goodJob)
         else resultsTitle.text = getString(R.string.map_guess_betterLuckNextTime)
 
         distanceText.text = getString(R.string.map_distanceFrom, distance)
         pointsEarned.text = getString(R.string.map_pointsEarned, score)
 
         moveMapOverLine()
-        //Toast.makeText(activity as MainActivity, "Latitude: ${selectedPoint.latitude()}\nLongitude: ${selectedPoint.longitude()}\nDistance: ${(distance * 100.0).roundToInt() / 100.0}km", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(requireContext(), "Latitude: ${selectedPoint.latitude()}\nLongitude: ${selectedPoint.longitude()}\nDistance: ${(distance * 100.0).roundToInt() / 100.0}km", Toast.LENGTH_SHORT).show()
     }
 
     private fun getDistance(originalPoint: Point, guessedPoint: Point): Double {
@@ -166,6 +173,7 @@ class MapFragment : Fragment() {
     }
 
     private fun calculateScore(distance: Double): Int {
+        //Max score is 5000
         val score = 4999.91 * (0.998036).pow(distance)
         return score.roundToInt()
     }
