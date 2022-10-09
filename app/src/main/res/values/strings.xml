@@ -14,4 +14,11 @@
     <string name="searching_for_host">Searching For Host…</string>
     <string name="searching_for_player">Searching For Player…</string>
     <string name="waiting_for_photo_to_be_chosen">Waiting for Host to Choose Photo...</string>
+    <string name="map_continue">Continue</string>
+    <string name="map_guess_close">Close Guess!</string>
+    <string name="map_guess_goodJob">Good Job!</string>
+    <string name="map_guess_betterLuckNextTime">Better Luck Next Time!</string>
+    <string name="map_distanceFrom">You were %1$.2fkm from the correct location</string>
+    <string name="map_pointsEarned">You earned %1$d points</string>
+    <string name="preferences">Preferences</string>
 </resources>

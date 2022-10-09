@@ -2,25 +2,28 @@ package nz.ac.canterbury.guessit.ui.map
 
 
 import android.os.Bundle
+import android.util.DisplayMetrics
+import android.view.Display
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.mapbox.geojson.Point
+import com.mapbox.geojson.Polygon
+import com.mapbox.maps.EdgeInsets
 import com.mapbox.maps.MapView
 import com.mapbox.maps.MapboxMap
 import com.mapbox.maps.Style
 import com.mapbox.maps.plugin.annotation.annotations
-import com.mapbox.maps.plugin.annotation.generated.CircleAnnotationOptions
-import com.mapbox.maps.plugin.annotation.generated.createCircleAnnotationManager
+import com.mapbox.maps.plugin.annotation.generated.*
 import com.mapbox.maps.plugin.gestures.addOnMapClickListener
 import com.mapbox.maps.plugin.scalebar.scalebar
-import nz.ac.canterbury.guessit.controller.ImageLabeler
 import nz.ac.canterbury.guessit.MainActivity
 import nz.ac.canterbury.guessit.R
+import nz.ac.canterbury.guessit.controller.ImageLabeler
 import kotlin.math.roundToInt
 
 
@@ -30,13 +33,22 @@ class MapFragment : Fragment() {
     lateinit var photoDescriptionTextView: TextView
     lateinit var mapView: MapView
     lateinit var map_guessButton: Button
+    lateinit var resultsLayout: LinearLayout
 
     lateinit var mapboxMap: MapboxMap
     lateinit var selectedPoint: Point
 
+    lateinit var resultsTitle: TextView
+    lateinit var distanceText: TextView
+    lateinit var pointsEarned: TextView
+    lateinit var continueButton: Button
+
     lateinit var imageLabeler: ImageLabeler
 
-    var testPoint = Point.fromLngLat(172.604180, -43.303350)
+    var imagePoint = Point.fromLngLat(172.604180, -43.303350)
+
+    lateinit var circleAnnotationManager: CircleAnnotationManager
+    lateinit var polylineAnnotationManager: PolylineAnnotationManager
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,6 +59,14 @@ class MapFragment : Fragment() {
         val view: View = inflater.inflate(R.layout.fragment_map, container, false)
 
         imageLabeler = ImageLabeler(activity as MainActivity)
+
+        resultsLayout = view.findViewById(R.id.map_resultsLayout)
+        resultsLayout.visibility = View.INVISIBLE
+
+        resultsTitle = view.findViewById(R.id.resultsTitle)
+        distanceText = view.findViewById(R.id.distanceText)
+        pointsEarned = view.findViewById(R.id.pointsEarnedText)
+        continueButton = view.findViewById(R.id.map_continueButton)
 
 
         photoDescriptionTextView = view.findViewById(R.id.photoFeatures)
@@ -59,27 +79,18 @@ class MapFragment : Fragment() {
 
         // Create an instance of the Annotation API and get the CircleAnnotationManager.
         val annotationApi = mapView.annotations
-        val circleAnnotationManager = annotationApi.createCircleAnnotationManager()
+        circleAnnotationManager = annotationApi.createCircleAnnotationManager()
+        polylineAnnotationManager = annotationApi.createPolylineAnnotationManager()
 
         mapboxMap.addOnMapClickListener { point ->
-            selectedPoint = point
+            //Make it so you cant click the map if you arent guessing anymore
+            if (resultsLayout.visibility == View.INVISIBLE) {
+                selectedPoint = point
 
-            //Adding marker to map
-            circleAnnotationManager.deleteAll()
-            // Set options for the resulting circle layer.
-            val circleAnnotationOptions: CircleAnnotationOptions = CircleAnnotationOptions()
-                // Define a geographic coordinate.
-                .withPoint(selectedPoint)
-                // Style the circle that will be added to the map.
-                .withCircleRadius(8.0)
-                .withCircleColor("#3399ff")
-                .withCircleStrokeWidth(2.0)
-                .withCircleStrokeColor("#ffffff")
-            // Add the resulting circle to the map.
-            circleAnnotationManager.create(circleAnnotationOptions)
+                addPoint()
 
-            map_guessButton.isEnabled = true
-
+                map_guessButton.isEnabled = true
+            }
             true
         }
 
@@ -89,13 +100,31 @@ class MapFragment : Fragment() {
         }
         map_guessButton.isEnabled = false
 
+        continueButton.setOnClickListener {
+            //Do something here
+        }
+
         return view
     }
 
     private fun manageGuess() {
-        val distance = getDistance(testPoint, selectedPoint)
+        val distance = getDistance(imagePoint, selectedPoint)
+        addLine()
 
-        Toast.makeText(activity as MainActivity, "Latitude: ${selectedPoint.latitude()}\nLongitude: ${selectedPoint.longitude()}\nDistance: ${(distance * 100.0).roundToInt() / 100.0}km", Toast.LENGTH_SHORT).show()
+        val score = calculateScore(distance)
+
+        map_guessButton.visibility = View.INVISIBLE
+        resultsLayout.visibility = View.VISIBLE
+
+        if (score < 100) resultsTitle.text = getString(R.string.map_guess_close)
+        if (score < 500) resultsTitle.text = getString(R.string.map_guess_goodJob)
+        else resultsTitle.text = getString(R.string.map_guess_betterLuckNextTime)
+
+        distanceText.text = getString(R.string.map_distanceFrom, distance)
+        pointsEarned.text = getString(R.string.map_pointsEarned, score)
+
+        moveMapOverLine()
+        //Toast.makeText(activity as MainActivity, "Latitude: ${selectedPoint.latitude()}\nLongitude: ${selectedPoint.longitude()}\nDistance: ${(distance * 100.0).roundToInt() / 100.0}km", Toast.LENGTH_SHORT).show()
     }
 
     private fun getDistance(originalPoint: Point, guessedPoint: Point): Double {
@@ -112,6 +141,11 @@ class MapFragment : Fragment() {
         return dist
     }
 
+    private fun calculateScore(distance: Double): Int {
+        //Calculate actual score here
+        return (distance * 2).roundToInt()
+    }
+
     //This function converts decimal degrees to radians
     private fun deg2rad(deg: Double): Double {
         return deg * Math.PI / 180.0
@@ -120,5 +154,75 @@ class MapFragment : Fragment() {
     //This function converts radians to decimal degrees
     private fun rad2deg(rad: Double): Double {
         return rad * 180.0 / Math.PI
+    }
+
+
+    private fun addPoint() {
+        circleAnnotationManager.deleteAll()
+        //Selected point
+        // Set options for the resulting circle layer.
+        val circleAnnotationOptions: CircleAnnotationOptions = CircleAnnotationOptions()
+            // Define a geographic coordinate.
+            .withPoint(selectedPoint)
+            // Style the circle that will be added to the map.
+            .withCircleRadius(8.0)
+            .withCircleColor("#3399ff")
+            .withCircleStrokeWidth(2.0)
+            .withCircleStrokeColor("#ffffff")
+        // Add the resulting circle to the map.
+        circleAnnotationManager.create(circleAnnotationOptions)
+    }
+
+
+    private fun addLine() {
+        polylineAnnotationManager.deleteAll()
+        // Set options for the resulting line layer.
+        val polylineAnnotationOptions: PolylineAnnotationOptions = PolylineAnnotationOptions()
+            .withPoints(arrayListOf(imagePoint, selectedPoint))
+            // Style the line that will be added to the map.
+            .withLineColor("#008080")
+            .withLineWidth(5.0)
+        //Make the line dashed
+        polylineAnnotationManager.lineDasharray = listOf(2.0, 0.5)
+
+        // Add the resulting line to the map.
+        polylineAnnotationManager.create(polylineAnnotationOptions)
+
+        //Image point
+        // Set options for the resulting circle layer.
+        val circleAnnotationOptions = CircleAnnotationOptions()
+            // Define a geographic coordinate.
+            .withPoint(imagePoint)
+            // Style the circle that will be added to the map.
+            .withCircleRadius(8.0)
+            .withCircleColor("#FF0000")
+            .withCircleStrokeWidth(2.0)
+            .withCircleStrokeColor("#ffffff")
+        // Add the resulting circle to the map.
+        circleAnnotationManager.create(circleAnnotationOptions)
+
+    }
+
+    private fun moveMapOverLine() {
+        val displayMetrics = DisplayMetrics()
+        (activity as MainActivity).windowManager.defaultDisplay.getMetrics(displayMetrics)
+
+        val height = displayMetrics.heightPixels
+
+
+        // Create a polygon
+        val triangleCoordinates = listOf(
+            listOf(
+                selectedPoint,
+                imagePoint
+            )
+        )
+        val polygon = Polygon.fromLngLats(triangleCoordinates)
+// Convert to a camera options from a given geometry and padding
+
+        val cameraPosition = mapboxMap.cameraForGeometry(polygon, EdgeInsets(100.0, 100.0, (height/2.3), 100.0))
+
+// Set camera position
+        mapboxMap.setCamera(cameraPosition)
     }
 }
