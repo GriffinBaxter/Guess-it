@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,7 +29,8 @@ class SearchFragment : Fragment() {
         @RequiresApi(Build.VERSION_CODES.S)
         get() = requireActivity().checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED &&
                 requireActivity().checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED &&
-                requireActivity().checkSelfPermission(Manifest.permission.BLUETOOTH_ADVERTISE) == PackageManager.PERMISSION_GRANTED
+                requireActivity().checkSelfPermission(Manifest.permission.BLUETOOTH_ADVERTISE) == PackageManager.PERMISSION_GRANTED &&
+                requireActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,6 +50,7 @@ class SearchFragment : Fragment() {
                 Manifest.permission.BLUETOOTH_SCAN,
                 Manifest.permission.BLUETOOTH_CONNECT,
                 Manifest.permission.BLUETOOTH_ADVERTISE,
+                Manifest.permission.ACCESS_FINE_LOCATION
             ), 1)
         } else {
             startSearch()
@@ -65,11 +68,13 @@ class SearchFragment : Fragment() {
             permissions.contains(Manifest.permission.BLUETOOTH_CONNECT) &&
             grantResults[permissions.indexOf(Manifest.permission.BLUETOOTH_CONNECT)] == 0 &&
             permissions.contains(Manifest.permission.BLUETOOTH_ADVERTISE) &&
-            grantResults[permissions.indexOf(Manifest.permission.BLUETOOTH_ADVERTISE)] == 0
+            grantResults[permissions.indexOf(Manifest.permission.BLUETOOTH_ADVERTISE)] == 0 &&
+            permissions.contains(Manifest.permission.ACCESS_FINE_LOCATION) &&
+            grantResults[permissions.indexOf(Manifest.permission.ACCESS_FINE_LOCATION)] == 0
         ) {
             startSearch()
         } else {
-            Toast.makeText(context, "The nearby permission is required to start the game.", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "The nearby permission and precise location are required to start the game.", Toast.LENGTH_LONG).show()
             Navigation.findNavController(requireView()).navigate(R.id.action_searchFragment_to_homeFragment)
         }
     }
