@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.annotation.CallSuper
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import com.squareup.picasso.Picasso
@@ -27,8 +28,6 @@ class SinglePhotoFragment : Fragment() {
     lateinit var nearbyConnectionManager: NearbyConnectionManager
 
     lateinit var imageLabeler: ImageLabeler
-
-    var confirmMapFragmentReceived = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,15 +57,21 @@ class SinglePhotoFragment : Fragment() {
             payload.put("longitude", longitude)
             payload.put("photoDescription", photoDescription)
             val payloadString = payload.toString()
-            while (!confirmMapFragmentReceived) {
-                nearbyConnectionManager.sendPayload(payloadString)
-            }
+            nearbyConnectionManager.sendPayload(payloadString)
         }
     }
 
     private val handlePayload: (string: String) -> Unit = { payload ->
         if (payload == "continue") {
-//            Navigation.findNavController(requireView()).navigate(R.id.action_mapFragment_to_waitFragment)
+            Navigation.findNavController(requireView()).navigate(R.id.action_singlePhotoFragment_to_showPhoto)
+        } else {
+            Log.e("INVALID", "Invalid payload received")
         }
+    }
+
+    @CallSuper
+    override fun onStop(){
+        nearbyConnectionManager.resetHandlePayload()
+        super.onStop()
     }
 }

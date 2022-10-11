@@ -46,7 +46,13 @@
     <fragment
         android:id="@+id/singlePhotoFragment"
         android:name="nz.ac.canterbury.guessit.ui.singlePhoto.SinglePhotoFragment"
-        android:label="SinglePhotoFragment" />
+        android:label="SinglePhotoFragment" >
+        <action
+            android:id="@+id/action_singlePhotoFragment_to_showPhoto"
+            app:destination="@id/showPhoto"
+            app:popUpTo="@id/showPhoto"
+            app:popUpToInclusive="false" />
+    </fragment>
     <fragment
         android:id="@+id/waitFragment"
         android:name="nz.ac.canterbury.guessit.ui.search.WaitFragment"

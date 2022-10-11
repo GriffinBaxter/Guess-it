@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.CallSuper
 import androidx.core.os.bundleOf
 import androidx.navigation.Navigation
 import dagger.hilt.android.AndroidEntryPoint
@@ -48,5 +49,13 @@ class WaitFragment : Fragment() {
             Log.e("Invalid Payload", "Invalid Payload Received in WaitFragment")
         }
     }
+
+    @CallSuper
+    override fun onStop(){
+        nearbyConnectionManager.resetHandlePayload()
+        super.onStop()
+    }
+
+
 
 }

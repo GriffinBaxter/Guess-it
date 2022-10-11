@@ -2,8 +2,10 @@ package nz.ac.canterbury.guessit.controller
 
 import android.content.Context
 import android.util.Log
+import androidx.navigation.Navigation
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.*
+import nz.ac.canterbury.guessit.R
 //import nz.ac.canterbury.guessit.ui.nearby.NearbyFragment
 import java.util.*
 import javax.inject.Inject
@@ -102,8 +104,12 @@ class NearbyConnectionManager @Inject constructor(appContext: Context) {
         }
     }
 
+    val handlePayloadDefault: ((string: String) -> Unit)? = { payload ->
+        Log.i("PayloadHandler", "No payload handler set up")
+    }
+
     // Will be called when a payload is received. Can be substituted as needed by the current fragment
-    var handlePayload: ((string: String) -> Unit)? = null
+    var handlePayload: ((string: String) -> Unit)? = handlePayloadDefault
 
     // Will be called when a connection result succeeds. Can be substituted as needed by the current fragment
     var handleConnectionResult: (() -> Unit)? = null
@@ -148,6 +154,10 @@ class NearbyConnectionManager @Inject constructor(appContext: Context) {
             val treat = TREATS[generator.nextInt(TREATS.size)]
             return "$color $treat"
         }
+    }
+
+    fun resetHandlePayload() {
+        handlePayload = handlePayloadDefault
     }
 
 }
