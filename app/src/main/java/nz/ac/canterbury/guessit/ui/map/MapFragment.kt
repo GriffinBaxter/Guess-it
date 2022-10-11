@@ -23,14 +23,16 @@ import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.*
 import com.mapbox.maps.plugin.gestures.addOnMapClickListener
 import com.mapbox.maps.plugin.scalebar.scalebar
+import dagger.hilt.android.AndroidEntryPoint
 import nz.ac.canterbury.guessit.MainActivity
 import nz.ac.canterbury.guessit.R
+import nz.ac.canterbury.guessit.controller.NearbyConnectionManager
+import javax.inject.Inject
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
-
+@AndroidEntryPoint
 class MapFragment : Fragment() {
-
 
     lateinit var photoDescriptionTextView: TextView
     lateinit var mapView: MapView
@@ -45,12 +47,13 @@ class MapFragment : Fragment() {
     lateinit var pointsEarned: TextView
     lateinit var continueButton: Button
     lateinit var shareButton: Button
-
-
     lateinit var imagePoint: Point
 
     lateinit var circleAnnotationManager: CircleAnnotationManager
     lateinit var polylineAnnotationManager: PolylineAnnotationManager
+
+    @Inject
+    lateinit var nearbyConnectionManager: NearbyConnectionManager
 
     var score: Int? = null
 
@@ -80,11 +83,7 @@ class MapFragment : Fragment() {
         photoDescriptionTextView.text = arguments?.getString("photoDescription")!!
         imagePoint = Point.fromLngLat(newLong.toDouble(), newLat.toDouble())
 
-
-
         resultsLayout.visibility = View.INVISIBLE
-
-
 
         mapboxMap = mapView.getMapboxMap()
 
@@ -92,7 +91,6 @@ class MapFragment : Fragment() {
         val annotationApi = mapView.annotations
         circleAnnotationManager = annotationApi.createCircleAnnotationManager()
         polylineAnnotationManager = annotationApi.createPolylineAnnotationManager()
-
 
         val preferences: SharedPreferences = androidx.preference.PreferenceManager.getDefaultSharedPreferences(requireContext())
         val darkMode = preferences.getBoolean("darkMode", false)
@@ -121,6 +119,7 @@ class MapFragment : Fragment() {
         }
 
         continueButton.setOnClickListener {
+            nearbyConnectionManager.sendPayload("continue")
             Navigation.findNavController(requireView()).navigate(R.id.action_mapFragment_to_waitFragment)
         }
 

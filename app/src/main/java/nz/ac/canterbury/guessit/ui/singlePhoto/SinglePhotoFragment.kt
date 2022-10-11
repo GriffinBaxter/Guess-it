@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.Navigation
 import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -38,8 +39,7 @@ class SinglePhotoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        nearbyConnectionManager.handlePayload = handleAck
+        nearbyConnectionManager.handlePayload = handlePayload
 
         imageLabeler = ImageLabeler(activity as MainActivity)
 
@@ -64,11 +64,9 @@ class SinglePhotoFragment : Fragment() {
         }
     }
 
-    private val handleAck: (string: String) -> Unit = { payload ->
-        if (payload == "ACK") {
-            confirmMapFragmentReceived = true
-        } else {
-            Log.e("Invalid Payload", "Invalid Payload Received in SinglePhotoFragment")
+    private val handlePayload: (string: String) -> Unit = { payload ->
+        if (payload == "continue") {
+//            Navigation.findNavController(requireView()).navigate(R.id.action_mapFragment_to_waitFragment)
         }
     }
 }

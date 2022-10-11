@@ -35,7 +35,6 @@ class WaitFragment : Fragment() {
     private val handlePayload: (string: String) -> Unit = { payload ->
         val jsonPayload = JSONObject(payload)
         if (jsonPayload.has("latitude") && jsonPayload.has("longitude") && jsonPayload.has("photoDescription")) {
-            nearbyConnectionManager.sendPayload("ACK")
 
             val latitude = jsonPayload.get("latitude").toString()
             val longitude = jsonPayload.get("longitude").toString()
@@ -43,6 +42,7 @@ class WaitFragment : Fragment() {
             val args = bundleOf(
                 "latitude" to latitude, "longitude" to longitude, "photoDescription" to photoDescription
             )
+            Log.e("WAITNAV","navigating...")
             Navigation.findNavController(requireView()).navigate(R.id.action_waitFragment_to_mapFragment, args)
         } else {
             Log.e("Invalid Payload", "Invalid Payload Received in WaitFragment")

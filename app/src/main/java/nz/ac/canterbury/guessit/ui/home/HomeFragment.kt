@@ -9,10 +9,12 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import com.google.android.material.appbar.MaterialToolbar
+import dagger.hilt.android.AndroidEntryPoint
 import nz.ac.canterbury.guessit.R
 import nz.ac.canterbury.guessit.controller.NearbyConnectionManager
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class HomeFragment : Fragment() {
 
     @Inject
@@ -22,11 +24,13 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_home, container, false)
+        return inflater.inflate(R.layout.fragment_home, container, false)
+    }
 
-        if (::nearbyConnectionManager.isInitialized) {
-            nearbyConnectionManager.disconnectFromEndpoint()
-        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        nearbyConnectionManager.disconnectFromEndpoint()
 
         val showPhotoButton: Button = view.findViewById(R.id.showPhotoButton)
         showPhotoButton.setOnClickListener {
@@ -74,6 +78,5 @@ class HomeFragment : Fragment() {
             }
         }
 
-        return view
     }
 }
