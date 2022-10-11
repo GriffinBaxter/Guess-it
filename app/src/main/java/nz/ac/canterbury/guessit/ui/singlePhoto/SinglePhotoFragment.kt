@@ -8,7 +8,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.annotation.CallSuper
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.Navigation
 import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -27,8 +29,6 @@ class SinglePhotoFragment : Fragment() {
 
     lateinit var imageLabeler: ImageLabeler
 
-    var confirmMapFragmentReceived = false
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -38,8 +38,7 @@ class SinglePhotoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        nearbyConnectionManager.handlePayload = handleAck
+        nearbyConnectionManager.handlePayload = handlePayload
 
         imageLabeler = ImageLabeler(activity as MainActivity)
 
@@ -58,17 +57,21 @@ class SinglePhotoFragment : Fragment() {
             payload.put("longitude", longitude)
             payload.put("photoDescription", photoDescription)
             val payloadString = payload.toString()
-            while (!confirmMapFragmentReceived) {
-                nearbyConnectionManager.sendPayload(payloadString)
-            }
+            nearbyConnectionManager.sendPayload(payloadString)
         }
     }
 
-    private val handleAck: (string: String) -> Unit = { payload ->
-        if (payload == "ACK") {
-            confirmMapFragmentReceived = true
+    private val handlePayload: (string: String) -> Unit = { payload ->
+        if (payload == "continue") {
+            Navigation.findNavController(requireView()).navigate(R.id.action_singlePhotoFragment_to_showPhoto)
         } else {
-            Log.e("Invalid Payload", "Invalid Payload Received in SinglePhotoFragment")
+            Log.e("INVALID", "Invalid payload received")
         }
+    }
+
+    @CallSuper
+    override fun onStop(){
+        nearbyConnectionManager.resetHandlePayload()
+        super.onStop()
     }
 }
