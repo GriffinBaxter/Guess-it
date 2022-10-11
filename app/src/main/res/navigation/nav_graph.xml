@@ -14,14 +14,8 @@
             android:id="@+id/action_homeFragment_to_showPhoto"
             app:destination="@id/showPhoto" />
         <action
-            android:id="@+id/action_homeFragment_to_BluetoothFragment2"
-            app:destination="@id/BluetoothFragment" />
-        <action
             android:id="@+id/action_homeFragment_to_mapFragment"
             app:destination="@id/mapFragment" />
-        <action
-            android:id="@+id/action_homeFragment_to_nearbyFragment"
-            app:destination="@id/nearbyFragment" />
         <action
             android:id="@+id/action_homeFragment_to_searchFragment"
             app:destination="@id/searchFragment" />
@@ -39,11 +33,6 @@
             app:destination="@id/singlePhotoFragment" />
     </fragment>
     <fragment
-        android:id="@+id/BluetoothFragment"
-        android:name="nz.ac.canterbury.guessit.ui.bluetooth.BluetoothFragment"
-        android:label="fragment_bluetooth"
-        tools:layout="@layout/fragment_bluetooth"/>
-    <fragment
         android:id="@+id/mapFragment"
         android:name="nz.ac.canterbury.guessit.ui.map.MapFragment"
         android:label="fragment_map"
@@ -58,11 +47,6 @@
         android:id="@+id/singlePhotoFragment"
         android:name="nz.ac.canterbury.guessit.ui.singlePhoto.SinglePhotoFragment"
         android:label="SinglePhotoFragment" />
-    <fragment
-        android:id="@+id/nearbyFragment"
-        android:name="nz.ac.canterbury.guessit.ui.nearby.NearbyFragment"
-        android:label="fragment_nearby"
-        tools:layout="@layout/fragment_nearby" />
     <fragment
         android:id="@+id/waitFragment"
         android:name="nz.ac.canterbury.guessit.ui.search.WaitFragment"
