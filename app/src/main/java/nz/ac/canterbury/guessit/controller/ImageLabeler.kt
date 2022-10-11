@@ -42,6 +42,7 @@ class ImageLabeler(var activity: Activity) {
 
     fun getLabels(labels: MutableList<ImageLabel>): String {
         var returnString = ""
+        if (labels.size == 0) return returnString
         for (label in labels) {
             returnString += "${label.text}, "
         }
