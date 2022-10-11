@@ -114,7 +114,7 @@ class ShowPhotoFragment : Fragment(), PhotoAdapter.OnPhotoListener {
         ) {
             takePhoto()
         } else {
-            Toast.makeText(context, "The fine/precise location permission is required to take a photo.", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, getString(R.string.locationRequired), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -151,7 +151,7 @@ class ShowPhotoFragment : Fragment(), PhotoAdapter.OnPhotoListener {
         } catch (e: IOException) {
             e.message?.let { Log.e("Couldn't read exif info: ", it) }
         }
-        Toast.makeText(context, "Selected photo has no location data available.", Toast.LENGTH_LONG).show()
+        Toast.makeText(context, getString(R.string.noLocationAvailable), Toast.LENGTH_LONG).show()
         return null
     }
 

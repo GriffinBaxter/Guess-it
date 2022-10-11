@@ -46,7 +46,7 @@ class WaitFragment : Fragment() {
             Log.e("WAITNAV","navigating...")
             Navigation.findNavController(requireView()).navigate(R.id.action_waitFragment_to_mapFragment, args)
         } else {
-            Log.e("Invalid Payload", "Invalid Payload Received in WaitFragment")
+            Log.e("Invalid Payload", getString(R.string.invalidPayload))
         }
     }
 

@@ -6,7 +6,6 @@ import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -119,7 +118,7 @@ class MapFragment : Fragment() {
         }
 
         continueButton.setOnClickListener {
-            nearbyConnectionManager.sendPayload("continue")
+            nearbyConnectionManager.sendPayload(getString(R.string.continuePayload))
             Navigation.findNavController(requireView()).navigate(R.id.action_mapFragment_to_waitFragment)
         }
 
@@ -220,7 +219,7 @@ class MapFragment : Fragment() {
     private fun shareScore(score: Int) {
         val sendIntent: Intent = Intent().apply {
             action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, "I just got a score of $score on GuessIt!")
+            putExtra(Intent.EXTRA_TEXT, getString(R.string.shareMessage, score))
             type = "text/plain"
         }
 
@@ -259,9 +258,6 @@ class MapFragment : Fragment() {
 
 
         polylineAnnotationManager.lineDasharray = listOf(2.0, 0.5)
-
-
-        Log.d("Dashed", polylineAnnotationManager.lineDasharray.toString())
 
         // Add the resulting line to the map.
         polylineAnnotationManager.create(polylineAnnotationOptions)

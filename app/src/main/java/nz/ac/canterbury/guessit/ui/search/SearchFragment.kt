@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -74,7 +73,7 @@ class SearchFragment : Fragment() {
         ) {
             startSearch()
         } else {
-            Toast.makeText(context, "The nearby permission and precise location are required to start the game.", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, getString(R.string.nearbyRequirements), Toast.LENGTH_LONG).show()
             Navigation.findNavController(requireView()).navigate(R.id.action_searchFragment_to_homeFragment)
         }
     }

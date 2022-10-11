@@ -27,4 +27,13 @@
     <string name="notificationChannelDescription">Channel for notifications</string>
     <string name="notificationTitle">Player Ready to Guess</string>
     <string name="notificationText">The other player has finished guessing and has asked for another photo!</string>
+
+
+    <string name="failedToLoadImageDescription">Failed to get Description of Image: Could not load Image</string>
+    <string name="continuePayload">continue</string>
+    <string name="shareMessage">I just got a score of %1$d on GuessIt!</string>
+    <string name="nearbyRequirements">The nearby permission and precise location are required to start the game.</string>
+    <string name="invalidPayload">Invalid Payload Received in WaitFragment</string>
+    <string name="locationRequired">The fine/precise location permission is required to take a photo.</string>
+    <string name="noLocationAvailable">Selected photo has no location data available.</string>
 </resources>

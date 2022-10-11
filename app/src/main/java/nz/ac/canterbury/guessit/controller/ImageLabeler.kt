@@ -1,6 +1,7 @@
 package nz.ac.canterbury.guessit.controller
 
 import android.app.Activity
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.util.Log
 import android.widget.Toast
@@ -10,6 +11,7 @@ import com.google.mlkit.vision.label.ImageLabeling
 import com.google.mlkit.vision.label.defaults.ImageLabelerOptions
 import kotlinx.coroutines.tasks.await
 import nz.ac.canterbury.guessit.MainActivity
+import nz.ac.canterbury.guessit.R
 import java.io.IOException
 
 class ImageLabeler(var activity: Activity) {
@@ -20,7 +22,7 @@ class ImageLabeler(var activity: Activity) {
         try {
             image = InputImage.fromBitmap(bitmap, 0)
         } catch (e: IOException) {
-            return "Failed to get Description of Image: Could not load Image"
+            return Resources.getSystem().getString(R.string.failedToLoadImageDescription)
         }
 
         //Label Image
