@@ -47,7 +47,13 @@
         android:id="@+id/mapFragment"
         android:name="nz.ac.canterbury.guessit.ui.map.MapFragment"
         android:label="fragment_map"
-        tools:layout="@layout/fragment_map" />
+        tools:layout="@layout/fragment_map" >
+        <action
+            android:id="@+id/action_mapFragment_to_waitFragment"
+            app:destination="@id/waitFragment"
+            app:popUpTo="@id/waitFragment"
+            app:popUpToInclusive="false" />
+    </fragment>
     <fragment
         android:id="@+id/singlePhotoFragment"
         android:name="nz.ac.canterbury.guessit.ui.singlePhoto.SinglePhotoFragment"
@@ -79,7 +85,9 @@
             app:destination="@id/showPhoto" />
         <action
             android:id="@+id/action_searchFragment_to_homeFragment"
-            app:destination="@id/homeFragment" />
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="false" />
     </fragment>
     <fragment
         android:id="@+id/preferencesFragment"

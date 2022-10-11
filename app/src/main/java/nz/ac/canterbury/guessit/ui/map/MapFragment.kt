@@ -15,6 +15,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.Navigation
 import com.mapbox.geojson.Point
 import com.mapbox.geojson.Polygon
 import com.mapbox.maps.*
@@ -120,7 +121,7 @@ class MapFragment : Fragment() {
         }
 
         continueButton.setOnClickListener {
-            //Do something here
+            Navigation.findNavController(requireView()).navigate(R.id.action_mapFragment_to_waitFragment)
         }
 
         shareButton.setOnClickListener {

@@ -27,6 +27,8 @@ class SinglePhotoFragment : Fragment() {
 
     lateinit var imageLabeler: ImageLabeler
 
+    var confirmMapFragmentReceived = false
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -36,6 +38,8 @@ class SinglePhotoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        nearbyConnectionManager.handlePayload = handleAck
 
         imageLabeler = ImageLabeler(activity as MainActivity)
 
@@ -54,7 +58,17 @@ class SinglePhotoFragment : Fragment() {
             payload.put("longitude", longitude)
             payload.put("photoDescription", photoDescription)
             val payloadString = payload.toString()
-            nearbyConnectionManager.sendPayload(payloadString)
+            while (!confirmMapFragmentReceived) {
+                nearbyConnectionManager.sendPayload(payloadString)
+            }
+        }
+    }
+
+    private val handleAck: (string: String) -> Unit = { payload ->
+        if (payload == "ACK") {
+            confirmMapFragmentReceived = true
+        } else {
+            Log.e("Invalid Payload", "Invalid Payload Received in SinglePhotoFragment")
         }
     }
 }

@@ -35,6 +35,8 @@ class WaitFragment : Fragment() {
     private val handlePayload: (string: String) -> Unit = { payload ->
         val jsonPayload = JSONObject(payload)
         if (jsonPayload.has("latitude") && jsonPayload.has("longitude") && jsonPayload.has("photoDescription")) {
+            nearbyConnectionManager.sendPayload("ACK")
+
             val latitude = jsonPayload.get("latitude").toString()
             val longitude = jsonPayload.get("longitude").toString()
             val photoDescription = jsonPayload.get("photoDescription").toString()
