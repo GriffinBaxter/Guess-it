@@ -1,5 +1,7 @@
 package nz.ac.canterbury.guessit.ui.singlePhoto
 
+import android.app.PendingIntent
+import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
@@ -9,6 +11,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.annotation.CallSuper
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import com.squareup.picasso.Picasso
@@ -64,6 +68,7 @@ class SinglePhotoFragment : Fragment() {
     private val handlePayload: (string: String) -> Unit = { payload ->
         if (payload == "continue") {
             Navigation.findNavController(requireView()).navigate(R.id.action_singlePhotoFragment_to_showPhoto)
+            sendReadyNotification()
         } else {
             Log.e("INVALID", "Invalid payload received")
         }
@@ -73,5 +78,25 @@ class SinglePhotoFragment : Fragment() {
     override fun onStop(){
         nearbyConnectionManager.resetHandlePayload()
         super.onStop()
+    }
+
+    fun sendReadyNotification(){
+        val notification = NotificationCompat.Builder(requireContext(), "PlayerReadyReminder")
+            .setSmallIcon(R.drawable.app_icon_foreground)
+            .setContentTitle("Player Ready to Guess")
+            .setContentText("The other player has finished guessing and has asked for another photo!")
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentIntent(
+                PendingIntent.getActivity(
+                    requireContext(),
+                    0,
+                    Intent(requireContext(), MainActivity::class.java),
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
+            .build()
+
+        with(NotificationManagerCompat.from(requireContext())) {
+            // notificationId is a unique int for each notification that you must define
+            notify(1, notification)
+        }
     }
 }
