@@ -22,4 +22,9 @@
     <string name="map_distanceFrom">You were %1$.2fkm from the correct location</string>
     <string name="map_pointsEarned">You earned %1$d points</string>
     <string name="preferences">Preferences</string>
+
+    <string name="notificationChannelName">PlayerReadyReminder</string>
+    <string name="notificationChannelDescription">Channel for notifications</string>
+    <string name="notificationTitle">Player Ready to Guess</string>
+    <string name="notificationText">The other player has finished guessing and has asked for another photo!</string>
 </resources>
