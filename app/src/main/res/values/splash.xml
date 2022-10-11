@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.SENG440Assignment2.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#ffffff</item>
+
+        <item name="windowSplashScreenAnimatedIcon">@drawable/app_icon_foreground</item>
+
+        <item name="postSplashScreenTheme">@style/Base.Theme.SENG440Assignment2</item>
+    </style>
+</resources>

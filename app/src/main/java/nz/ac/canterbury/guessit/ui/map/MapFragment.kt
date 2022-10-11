@@ -165,8 +165,6 @@ class MapFragment : Fragment() {
         model.pitch = mapboxMap.cameraState.pitch
         if (this::selectedPoint.isInitialized) model.selectedPoint = selectedPoint
         model.score = score
-
-
     }
 
     private fun manageGuess() {

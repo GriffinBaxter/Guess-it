@@ -67,8 +67,8 @@ class SinglePhotoFragment : Fragment() {
 
     private val handlePayload: (string: String) -> Unit = { payload ->
         if (payload == "continue") {
-            Navigation.findNavController(requireView()).navigate(R.id.action_singlePhotoFragment_to_showPhoto)
             sendReadyNotification()
+            Navigation.findNavController(requireView()).navigate(R.id.action_singlePhotoFragment_to_showPhoto)
         } else {
             Log.e("INVALID", "Invalid payload received")
         }
@@ -98,5 +98,6 @@ class SinglePhotoFragment : Fragment() {
             // notificationId is a unique int for each notification that you must define
             notify(1, notification)
         }
+
     }
 }
