@@ -51,7 +51,7 @@ class SinglePhotoFragment : Fragment() {
         val longitude = arguments?.getString("longitude")!!.toDouble()
 
         lifecycleScope.launch {
-            val photoDescription = imageLabeler.setPhotoDescription(BitmapFactory.decodeFile(photoPath))
+            val photoDescription = imageLabeler.getPhotoDescription(BitmapFactory.decodeFile(photoPath))
             Log.e("PHOTODESC", "Here: ${photoDescription}")
             val payload = JSONObject()
             payload.put("latitude", latitude)

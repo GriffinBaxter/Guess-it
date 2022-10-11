@@ -8,15 +8,13 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.label.ImageLabel
 import com.google.mlkit.vision.label.ImageLabeling
 import com.google.mlkit.vision.label.defaults.ImageLabelerOptions
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import nz.ac.canterbury.guessit.MainActivity
-import okhttp3.internal.wait
 import java.io.IOException
 
 class ImageLabeler(var activity: Activity) {
 
-    suspend fun setPhotoDescription(bitmap: Bitmap): String {
+    suspend fun getPhotoDescription(bitmap: Bitmap): String {
         //Load Image
         val image: InputImage
         try {
@@ -43,17 +41,11 @@ class ImageLabeler(var activity: Activity) {
     }
 
     fun getLabels(labels: MutableList<ImageLabel>): String {
-        val labelTexts = mutableListOf<String>()
         var returnString = ""
         for (label in labels) {
-            val text = label.text
-            val confidence = label.confidence
-            val index = label.index
-            returnString += "${text}, "
-            labelTexts.add(text)
-            labelTexts.add(confidence.toString())
+            returnString += "${label.text}, "
         }
-        returnString.dropLast(2)
+        returnString = returnString.substring(0, returnString.length - 2)
         Toast.makeText(activity as MainActivity, returnString, Toast.LENGTH_LONG).show()
         return returnString
     }
