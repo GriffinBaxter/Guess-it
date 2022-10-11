@@ -1,5 +1,7 @@
 package nz.ac.canterbury.guessit.ui.singlePhoto
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
 import android.graphics.BitmapFactory
@@ -13,6 +15,7 @@ import android.widget.ImageView
 import androidx.annotation.CallSuper
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import com.squareup.picasso.Picasso
@@ -33,6 +36,8 @@ class SinglePhotoFragment : Fragment() {
 
     lateinit var imageLabeler: ImageLabeler
 
+    private var CHANNEL_ID = "PlayerReadyReminder"
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -42,6 +47,20 @@ class SinglePhotoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        //Create Notification Channel
+        val channelName = getString(R.string.notificationChannelName)
+        val channelDescriptionText = getString(R.string.notificationChannelDescription)
+        val channelImportance = NotificationManager.IMPORTANCE_HIGH
+        val mChannel = NotificationChannel(CHANNEL_ID, channelName, channelImportance)
+        mChannel.description = channelDescriptionText
+        // Register the channel with the system; you can't change the importance
+        // or other notification behaviors after this
+        val notificationManager = requireContext().getSystemService(FragmentActivity.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(mChannel)
+
+
+
         nearbyConnectionManager.handlePayload = handlePayload
 
         imageLabeler = ImageLabeler(activity as MainActivity)
@@ -67,8 +86,8 @@ class SinglePhotoFragment : Fragment() {
 
     private val handlePayload: (string: String) -> Unit = { payload ->
         if (payload == "continue") {
-            Navigation.findNavController(requireView()).navigate(R.id.action_singlePhotoFragment_to_showPhoto)
             sendReadyNotification()
+            Navigation.findNavController(requireView()).navigate(R.id.action_singlePhotoFragment_to_showPhoto)
         } else {
             Log.e("INVALID", "Invalid payload received")
         }
@@ -81,10 +100,10 @@ class SinglePhotoFragment : Fragment() {
     }
 
     fun sendReadyNotification(){
-        val notification = NotificationCompat.Builder(requireContext(), "PlayerReadyReminder")
+        val notification = NotificationCompat.Builder(requireContext(), CHANNEL_ID)
             .setSmallIcon(R.drawable.app_icon_foreground)
-            .setContentTitle("Player Ready to Guess")
-            .setContentText("The other player has finished guessing and has asked for another photo!")
+            .setContentTitle(getString(R.string.notificationTitle))
+            .setContentText(getString(R.string.notificationText))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(
                 PendingIntent.getActivity(
