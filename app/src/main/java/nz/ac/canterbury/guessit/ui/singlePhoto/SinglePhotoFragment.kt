@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import androidx.annotation.CallSuper
 import androidx.core.app.NotificationCompat
@@ -59,8 +60,6 @@ class SinglePhotoFragment : Fragment() {
         val notificationManager = requireContext().getSystemService(FragmentActivity.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(mChannel)
 
-
-
         nearbyConnectionManager.handlePayload = handlePayload
 
         imageLabeler = ImageLabeler(activity as MainActivity)
@@ -81,6 +80,11 @@ class SinglePhotoFragment : Fragment() {
             payload.put("photoDescription", photoDescription)
             val payloadString = payload.toString()
             nearbyConnectionManager.sendPayload(payloadString)
+        }
+
+        val showAnotherPhotoButton: Button = view.findViewById(R.id.showAnotherPhotoButton)
+        showAnotherPhotoButton.setOnClickListener {
+            Navigation.findNavController(requireView()).navigate(R.id.action_singlePhotoFragment_to_showPhoto)
         }
     }
 

@@ -38,4 +38,5 @@
     <string name="noLocationAvailable">Selected photo has no location data available.</string>
     <string name="retry_connection">Retry Connection</string>
     <string name="retry_connection_confirm">Retrying connection…</string>
+    <string name="show_another_photo">Choose another photo</string>
 </resources>

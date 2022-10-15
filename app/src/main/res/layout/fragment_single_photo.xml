@@ -7,6 +7,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <Button
+        android:id="@+id/showAnotherPhotoButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/show_another_photo"
+        android:layout_gravity="center"
+        android:layout_margin="20dp"/>
+
     <ImageView
         android:id="@+id/singlePhotoView"
         android:layout_width="match_parent"
