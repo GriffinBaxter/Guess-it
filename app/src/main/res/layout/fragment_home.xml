@@ -28,7 +28,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/guess_it"
-        android:textSize="30sp"
+        android:textSize="50sp"
         app:layout_constraintBottom_toTopOf="@+id/showPhotoButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -40,6 +40,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/show_photo"
+        android:textSize="25sp"
+        android:paddingVertical="15dp"
+        android:paddingHorizontal="25dp"
         app:layout_constraintBottom_toTopOf="@+id/textView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -50,22 +53,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/guess_photo"
+        android:textSize="25sp"
+        android:paddingVertical="15dp"
+        android:paddingHorizontal="25dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/showPhotoButton" />
-
-    <Button
-        android:id="@+id/dev_showMap"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="dev show map"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.516"
-        app:layout_constraintStart_toEndOf="@+id/guessPhotoButton"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.789" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

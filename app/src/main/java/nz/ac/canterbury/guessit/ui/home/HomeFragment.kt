@@ -47,13 +47,6 @@ class HomeFragment : Fragment() {
             )
             Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_searchFragment, args)
         }
-        val devShowMapButton: Button = view.findViewById(R.id.dev_showMap)
-        devShowMapButton.setOnClickListener {
-            val args = bundleOf(
-                "latitude" to "-43.303350", "longitude" to "172.604180", "photoDescription" to "Some cool Photo!"
-            )
-            Navigation.findNavController(requireView()).navigate(R.id.action_homeFragment_to_mapFragment, args)
-        }
 
         val actionBar: MaterialToolbar = view.findViewById(R.id.actionBar)
         actionBar.setOnMenuItemClickListener { menuItem ->
