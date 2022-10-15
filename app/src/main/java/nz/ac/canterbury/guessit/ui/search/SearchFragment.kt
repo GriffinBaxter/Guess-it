@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.CallSuper
@@ -23,6 +25,9 @@ class SearchFragment : Fragment() {
 
     @Inject
     lateinit var nearbyConnectionManager: NearbyConnectionManager
+
+    private lateinit var retryConnectionButton: Button
+    lateinit var progressBar: ProgressBar
 
     private val hasNearbyPermissions
         @RequiresApi(Build.VERSION_CODES.S)
@@ -43,6 +48,9 @@ class SearchFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         nearbyConnectionManager.handlePayload = handlePayload
         nearbyConnectionManager.handleConnectionResult = handleConnectionResult
+
+        progressBar = view.findViewById(R.id.pBar)
+        retryConnectionButton = view.findViewById(R.id.retryConnectionButton)
 
         if (!hasNearbyPermissions) {
             requestPermissions(arrayOf(
@@ -89,6 +97,18 @@ class SearchFragment : Fragment() {
         } else if (searchType == "player") {
             searchText.text = resources.getString(R.string.searching_for_host)
         }
+
+        progressBar.visibility = View.VISIBLE
+        retryConnectionButton.visibility = View.VISIBLE
+        retryConnectionButton.setOnClickListener {
+            nearbyConnectionManager.connectionsClient.apply {
+                stopAdvertising()
+                stopDiscovery()
+            }
+            nearbyConnectionManager.disconnectFromEndpoint()
+            startSearch()
+            Toast.makeText(context, getString(R.string.retry_connection_confirm), Toast.LENGTH_SHORT).show()
+        }
     }
 
     private val handlePayload: (string: String) -> Unit = {
@@ -109,10 +129,7 @@ class SearchFragment : Fragment() {
         nearbyConnectionManager.connectionsClient.apply {
             stopAdvertising()
             stopDiscovery()
-            // TODO: Probably want to only do this when the new connection manager is destroyed, or explicitly.
-//            stopAllEndpoints()
         }
-//        resetGame()
         super.onStop()
     }
 
