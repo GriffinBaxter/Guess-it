@@ -39,4 +39,5 @@
     <string name="retry_connection">Retry Connection</string>
     <string name="retry_connection_confirm">Retrying connection…</string>
     <string name="show_another_photo">Choose another photo</string>
+    <string name="search_hint">This can take up to 10 seconds.</string>
 </resources>
