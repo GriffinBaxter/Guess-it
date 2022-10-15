@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--    Generic Colors    -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!--    Light mode colours    -->
+    <color name="colorPrimary">#0074eb</color>
+    <color name="colorPrimaryDarker">#0067D1</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <!--    Dark mode colours    -->
+    <color name="dark_colorPrimary">#0074eb</color>
+    <color name="dark_colorPrimaryDarker">#0067D1</color>
+    <color name="dark_colorAccent">#00BCD4</color>
 </resources>

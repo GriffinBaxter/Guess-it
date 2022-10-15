@@ -23,6 +23,17 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <ImageView
+        android:id="@+id/homeIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/app_icon_foreground"
+        android:contentDescription="@string/guessit_logo_description"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
@@ -32,7 +43,7 @@
         app:layout_constraintBottom_toTopOf="@+id/showPhotoButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/homeIcon"
         />
 
     <Button

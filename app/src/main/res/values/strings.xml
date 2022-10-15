@@ -40,4 +40,10 @@
     <string name="retry_connection_confirm">Retrying connection…</string>
     <string name="show_another_photo">Choose another photo</string>
     <string name="search_hint">This can take up to 10 seconds.</string>
+    <string name="guessit_logo_description">GuessIt Logo</string>
+    <string name="preference_category_title">Edit app configuration</string>
+    <string name="dark_mode_preference_title">Dark Mode</string>
+    <string name="dark_mode_preference_summary">Dark Mode Enabled</string>
+    <string name="gallery_width_preference_title">Gallery Width</string>
+    <string name="gallery_width_preference_summary">Number of photos to display in each row</string>
 </resources>
