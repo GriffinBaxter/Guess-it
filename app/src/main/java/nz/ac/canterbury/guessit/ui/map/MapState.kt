@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import com.mapbox.geojson.Point
 
 class MapState: ViewModel() {
-    var centerPoint: Point = Point.fromLngLat(172.604180, -43.303350)
-    var zoom = 7.0
+    var centerPoint: Point = Point.fromLngLat(172.81749201636148, -42.21613418067329)
+    var zoom = 4.0
     var bearing = 0.0
     var pitch = 0.0
     var score: Int? = null
